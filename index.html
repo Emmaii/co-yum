@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CO-YUM — Sandwiches & Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root{
+      --bg1:#071024; --bg2:#11263f; --card:#0b1220; --accent:#ff7b54; --accent-2:#ff5722;
+      --muted:#9aa4b2; --light:#e6eef6; --glass: rgba(255,255,255,0.03); --success:#4caf50;
+      --warning:#ff9800; --shadow: 0 8px 30px rgba(2,6,23,0.6); --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); -webkit-font-smoothing:antialiased}
+    .container{max-width:1150px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 10px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061122}
+    h1{font-size:18px;margin:0}
+    nav{display:flex;gap:10px;align-items:center}
+    .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600}
+    .nav-btn.primary{background:var(--accent);color:#061122;border:none}
+    main{padding:22px 0}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    @media(max-width:980px){ .grid{grid-template-columns:1fr} .sidebar{position:static} }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
+    .card h2{margin:0 0 8px}
+    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+    .product{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+      position:relative;
+      display:flex;flex-direction:column;
+    }
+    .product:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.6) }
+    .img-wrap{position:relative;overflow:hidden}
+    .product img{width:100%;height:190px;object-fit:cover;display:block;transition: transform 300ms ease}
+    .product:hover img{ transform: scale(1.03) }
+    .badge{
+      position:absolute; left:10px; top:10px; padding:8px 10px; border-radius:999px; font-weight:800; font-size:12px;
+      background:rgba(6,17,34,0.6); color:var(--light); border:1px solid rgba(255,255,255,0.04);
+    }
+    .product .body{padding:14px; display:flex;flex-direction:column; gap:8px; flex:1}
+    .title{font-weight:800; font-size:15px}
+    .desc{color:var(--muted);font-size:13px;margin-top:2px}
+    .product .footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+    .price{font-weight:900;color:var(--accent); font-size:16px}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#061122;font-weight:800;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .sidebar{position:sticky;top:90px}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .progress{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%}
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03)}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px}
+    .modal.active{display:flex}
+    .modal .panel{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);max-height:90vh;overflow:auto}
+    .flex{display:flex;gap:10px}
+    .flex-between{display:flex;justify-content:space-between;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%}
+    .quiz-question{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px}
+    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px}
+    .quiz-option.selected{background:rgba(255,123,84,0.18);border:1px solid var(--accent)}
+    table{width:100%;border-collapse:collapse}
+    table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-row">
+        <div class="brand">
+          <div class="logo">CY</div>
+          <div>
+            <h1>CO-YUM</h1>
+            <div class="small muted">Sandwiches · Quizzes · Cash prizes</div>
+          </div>
+        </div>
+
+        <nav>
+          <!-- added welcome element to avoid errors -->
+          <div id="welcome" class="small muted" style="margin-right:8px">Not logged in</div>
+
+          <button id="loginBtn" class="nav-btn"><i class="fas fa-user"></i>&nbsp;Login (OPAY)</button>
+          <button id="openAdmin" class="nav-btn"><i class="fas fa-cog"></i>&nbsp;Admin</button>
+          <button id="viewLeaderboard" class="nav-btn"><i class="fas fa-trophy"></i>&nbsp;Leaderboard</button>
+          <button id="viewReviews" class="nav-btn"><i class="fas fa-comments"></i>&nbsp;Reviews</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="grid">
+        <!-- left column -->
+        <div>
+          <div class="card">
+            <div class="flex-between">
+              <div>
+                <h2>Menu — Fresh Sandwiches</h2>
+                <div class="small muted">Order online & qualify for weekly quiz prizes</div>
+              </div>
+              <div class="small muted"><i class="fas fa-phone"></i>&nbsp;Seller WhatsApp: <span id="sellerPhoneDisplay">+2348103606602</span></div>
+            </div>
+
+            <div style="margin-top:14px" id="products" class="products"></div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>How CO-YUM Works</h3>
+            <ol class="small muted" style="margin-top:8px">
+              <li>Login with your OPAY account number (we use it to identify you).</li>
+              <li>Buy at least <strong>two sandwiches</strong> within the same week to qualify for Saturday's quiz.</li>
+              <li>On Saturday, eligible users take a timed quiz — top scorer wins ₦5,000–₦10,000.</li>
+              <li>Checkout redirects to WhatsApp with a pre-filled order.</li>
+            </ol>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>Quiz — Saturday only</h3>
+            <div class="small muted" id="quizInfo">Quiz is available on Saturdays only. Eligibility: 2+ purchases in the same week.</div>
+
+            <div style="margin-top:12px">
+              <div class="flex-between">
+                <div class="small">Progress to qualify</div>
+                <div id="progressText" class="small muted">0/2 purchases</div>
+              </div>
+              <div class="progress" style="margin-top:8px"><i id="progressFill" style="width:0%"></i></div>
+            </div>
+
+            <div style="margin-top:12px">
+              <button id="openQuiz" class="btn"><i class="fas fa-play-circle"></i>&nbsp;Open Quiz</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- right column / sidebar -->
+        <aside class="sidebar">
+          <div class="card">
+            <h3>Your Cart</h3>
+            <div id="cartList" style="margin-top:10px"><div class="center small muted">Cart is empty</div></div>
+            <div class="cart-total" style="margin-top:12px">
+              <div class="small">Total:</div>
+              <div id="cartTotal" class="small" style="font-weight:900">₦0</div>
+            </div>
+            <div style="margin-top:12px">
+              <button id="checkoutBtn" class="btn" style="width:100%"><i class="fab fa-whatsapp"></i>&nbsp;Checkout (WhatsApp)</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Your Profile</h3>
+            <div style="margin-top:8px" class="small muted">
+              <div class="flex-between"><span>Account:</span><span id="acctNumber">—</span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Purchases this week:</span><span id="purchasesCount">0</span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Balance:</span><span>₦<span id="balance">0</span></span></div>
+            </div>
+            <div style="margin-top:12px"><button id="viewHistory" class="nav-btn" style="width:100%"> <i class="fas fa-history"></i>&nbsp;Purchase History</button></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Proof & Reviews</h3>
+            <div id="proofList" style="max-height:200px;overflow:auto;margin-top:8px"><div class="center small muted">No payouts yet</div></div>
+            <div style="margin-top:10px"><button id="addReviewBtn" class="nav-btn" style="width:100%"><i class="fas fa-plus-circle"></i>&nbsp;Add Review / Proof</button></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer><div class="container small muted">CO-YUM — static demo. Works offline via browser localStorage. Customize seller phone & quiz in Admin.</div></footer>
+
+  <!-- Modals -->
+  <div id="modalLogin" class="modal"><div class="panel">
+    <div class="flex-between"><h3>Login — OPAY Account</h3><button class="nav-btn" data-modal="modalLogin" aria-label="close">&times;</button></div>
+    <div style="margin-top:12px"><input id="inputAcct" placeholder="Enter OPAY account (e.g. OPAY12345)"></div>
+    <div style="margin-top:10px" class="flex"><button id="doLogin" class="btn">Login</button><button class="nav-btn" data-modal="modalLogin">Cancel</button></div>
+  </div></div>
+
+  <div id="modalQuiz" class="modal"><div class="panel">
+    <div class="flex-between"><h3>Weekly Nutrition Quiz</h3><button class="nav-btn" data-modal="modalQuiz">&times;</button></div>
+    <div id="quizArea" style="margin-top:12px"></div>
+    <div class="quiz-timer center" id="quizTimer" style="margin-top:12px;font-weight:800">00:00</div>
+    <div class="flex-between" style="margin-top:12px"><div class="small muted">Complete all questions before time runs out</div>
+      <div class="flex"><button id="startQuiz" class="btn">Start Quiz</button><button class="nav-btn" data-modal="modalQuiz">Close</button></div>
+    </div>
+  </div></div>
+
+  <div id="modalAdmin" class="modal"><div class="panel">
+    <div class="flex-between"><h3>Admin Panel</h3><button class="nav-btn" data-modal="modalAdmin">&times;</button></div>
+    <div style="margin-top:10px" class="flex">
+      <input id="adminPass" type="password" placeholder="Enter admin password (default: admin123)">
+      <button id="adminLoginBtn" class="btn">Unlock</button>
+    </div>
+
+    <div id="adminArea" style="display:none;margin-top:12px">
+      <h4>Configuration</h4>
+      <div style="margin-top:8px"><input id="sellerPhone" placeholder="Seller phone (e.g. +2348103606602)"></div>
+      <div style="margin-top:8px" class="flex">
+        <input id="prizeMin" type="number" placeholder="Prize min (5000)">
+        <input id="prizeMax" type="number" placeholder="Prize max (10000)">
+      </div>
+
+      <h4 style="margin-top:12px">Quiz Questions</h4>
+      <div style="margin-top:8px"><textarea id="newQuestions" rows="6" placeholder='JSON array: [{"q":"Question?","choices":["a","b"],"answer":0}]'></textarea></div>
+      <div style="margin-top:8px" class="flex">
+        <button id="saveQuizQ" class="btn">Save Questions</button>
+        <button id="exportData" class="nav-btn">Export Data</button>
+        <button id="adminResetBtn" class="nav-btn">Reset Leaderboard</button>
+      </div>
+
+      <h4 style="margin-top:12px">Payouts & Proofs</h4>
+      <div id="payoutsAdmin" style="margin-top:8px"></div>
+
+      <div style="margin-top:12px"><button id="awardTop" class="btn">Auto-Award This Week Top</button></div>
+    </div>
+  </div></div>
+
+  <div id="modalReviews" class="modal"><div class="panel">
+    <div class="flex-between"><h3>Reviews & Leaderboard</h3><button class="nav-btn" data-modal="modalReviews">&times;</button></div>
+    <div id="reviewsArea" style="margin-top:12px"></div>
+  </div></div>
+
+<script>
+/* =========================
+   CO-YUM single-file app
+   HTML/CSS/JS only — uses localStorage
+   Amplified UI version (products limited to two items)
+   ========================= */
+
+const STORE_KEY = 'coyum_v4'; // new key so fresh state
+const DEFAULT = {
+  products: [
+    {
+      id:'s1',
+      title:'Classic Chicken Sandwich',
+      desc:'Tender, juicy chicken breast, crisp lettuce, vine-ripened tomato & CO-YUM signature sauce on toasted bread.',
+      price:2500,
+      img:'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1200&q=60',
+      badge: 'Best seller'
+    },
+    {
+      id:'s2',
+      title:'Parfait',
+      desc:'Creamy layered yogurt, crunchy granola, fresh seasonal fruits — a delightful premium parfait.',
+      price:4500,
+      img:'https://images.unsplash.com/photo-1553563408-74d56255c6e9?auto=format&fit=crop&w=1200&q=60',
+      badge: 'New'
+    }
+  ],
+  users:{},
+  leaderboard:[],
+  reviews:[],
+  payouts:[],
+  config:{ sellerPhone:'+2348103606602', prizeMin:5000, prizeMax:10000, adminPass:'admin123' },
+  quizQuestions:[
+    {q:'Which food group is a primary source of dietary fibre?', choices:['Fruits & vegetables','Oils','Sweets','Soda'], answer:0},
+    {q:'Which vitamin is abundant in citrus fruits?', choices:['Vitamin A','Vitamin C','Vitamin K','Vitamin D'], answer:1},
+    {q:'What is a healthy protein source for vegetarians?', choices:['Lentils','Bacon','Soda','Candy'], answer:0},
+    {q:'Which nutrient helps build and repair body tissues?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0}
+  ]
+};
+
+// --- Helpers ---
+function loadState(){ try{ const s = localStorage.getItem(STORE_KEY); if(!s){ localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); return JSON.parse(JSON.stringify(DEFAULT)) } return JSON.parse(s);}catch(e){ localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); return JSON.parse(JSON.stringify(DEFAULT)) } }
+function saveState(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)) }
+function uid(len=6){ return Math.random().toString(36).slice(2,2+len) }
+function nowISO(){ return new Date().toISOString() }
+function formatN(n){ return '₦'+Number(n).toLocaleString() }
+function getWeekKey(d=new Date()){
+  const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
+  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1)/7);
+  return tmp.getUTCFullYear() + '-W' + String(weekNo).padStart(2,'0');
+}
+
+// --- App state ---
+let state = loadState();
+let currentUser = null;
+let cart = {};
+let quizState = { running:false, timeLeft:0, timer:null, answers:[], startedAt:null };
+
+// --- DOM picks ---
+const productsEl = document.getElementById('products');
+const cartListEl = document.getElementById('cartList');
+const cartTotalEl = document.getElementById('cartTotal');
+const sellerPhoneDisplay = document.getElementById('sellerPhoneDisplay');
+const welcomeEl = document.getElementById('welcome');
+const acctNumberEl = document.getElementById('acctNumber');
+const purchasesCountEl = document.getElementById('purchasesCount');
+const balanceEl = document.getElementById('balance');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const proofListEl = document.getElementById('proofList');
+
+// defensive find (some elements may not exist in edge cases)
+function $(id){ return document.getElementById(id) }
+
+// --- Render functions ---
+function renderProducts(){
+  productsEl.innerHTML = '';
+  state.products.forEach(p=>{
+    const div = document.createElement('div'); div.className='product';
+    div.innerHTML = `
+      <div class="img-wrap">
+        ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+        <img src="${p.img}" alt="${p.title}">
+      </div>
+      <div class="body">
+        <div>
+          <div class="title">${p.title}</div>
+          <div class="desc">${p.desc}</div>
+        </div>
+        <div class="footer">
+          <div class="price">${formatN(p.price)}</div>
+          <button class="btn" data-id="${p.id}" data-action="add"><i class="fas fa-plus"></i>&nbsp;Add</button>
+        </div>
+      </div>
+    `;
+    productsEl.appendChild(div);
+  });
+}
+
+function renderCart(){
+  cartListEl.innerHTML = '';
+  const ids = Object.keys(cart);
+  if(ids.length === 0){ cartListEl.innerHTML = '<div class="center small muted">Cart is empty</div>'; cartTotalEl.textContent = formatN(0); return; }
+  ids.forEach(id=>{
+    const qty = cart[id];
+    const p = state.products.find(x=>x.id===id);
+    const div = document.createElement('div'); div.className='cart-item';
+    div.innerHTML = `<div style="flex:1"><div style="font-weight:800">${p.title}</div><div class="small muted">${qty} x ${formatN(p.price)}</div></div><div style="text-align:right"><div style="font-weight:900">${formatN(p.price*qty)}</div><div style="margin-top:6px"><button class="nav-btn" data-id="${p.id}" data-action="dec">-</button></div></div>`;
+    cartListEl.appendChild(div);
+  });
+  cartTotalEl.textContent = formatN(getCartTotal());
+}
+
+function getCartTotal(){ return Object.keys(cart).reduce((s,id)=>{ const p=state.products.find(x=>x.id===id); return s + (p? p.price*cart[id] : 0) },0) }
+
+function renderUser(){
+  if(currentUser){
+    welcomeEl.textContent = `Hi, ${currentUser.acct}`;
+    acctNumberEl.textContent = currentUser.acct;
+    purchasesCountEl.textContent = purchasesThisWeek(currentUser.acct);
+    balanceEl.textContent = currentUser.balance;
+  } else {
+    welcomeEl.textContent = 'Not logged in';
+    acctNumberEl.textContent = '—';
+    purchasesCountEl.textContent = '0';
+    balanceEl.textContent = '0';
+  }
+  updateProgressBar();
+}
+
+function purchasesThisWeek(acct){
+  const u = state.users[acct]; if(!u) return 0;
+  const wk = getWeekKey(); return (u.purchases||[]).filter(p=>p.week===wk).length;
+}
+
+function updateProgressBar(){
+  const purchases = currentUser ? purchasesThisWeek(currentUser.acct) : 0;
+  const percent = Math.min(100, Math.round((purchases/2)*100));
+  progressFill.style.width = percent + '%';
+  progressText.textContent = `${purchases}/2 purchases`;
+  if(purchases>=2) progressFill.style.background = 'linear-gradient(90deg, #4caf50, #66bb6a)';
+  else progressFill.style.background = '';
+}
+
+function renderProofList(){
+  proofListEl.innerHTML = '';
+  if(state.payouts.length===0){ proofListEl.innerHTML = '<div class="small muted center">No payouts yet</div>'; return; }
+  state.payouts.slice().reverse().forEach(p=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.style.padding='10px';
+    d.innerHTML = `<div class="flex-between"><div style="font-weight:800">${p.account}</div><div style="font-weight:900">${formatN(p.amount)}</div></div><div class="small muted" style="margin-top:6px">${new Date(p.date).toLocaleString()}</div>${p.img?'<div style="margin-top:8px"><img src="'+p.img+'" style="max-width:100%;border-radius:8px"></div>':''}`;
+    proofListEl.appendChild(d);
+  });
+}
+
+// --- Modal helpers ---
+function openModal(id){ const el=$(id); if(el) el.classList.add('active') }
+function closeModal(id){ const el=$(id); if(el) el.classList.remove('active') }
+
+// attach global click for modal close buttons and dynamic buttons
+document.addEventListener('click', (e)=>{
+  // modal close via data-modal attribute or top-level button
+  const dm = e.target.closest('[data-modal]');
+  if(dm){
+    const id = dm.getAttribute('data-modal');
+    if(id) closeModal(id);
+  }
+
+  // product add
+  const addBtn = e.target.closest('button[data-action="add"]');
+  if(addBtn){
+    const id = addBtn.getAttribute('data-id'); if(id){ cart[id] = (cart[id]||0)+1; renderCart(); updateProgressBar(); }
+  }
+
+  // cart decrement
+  const decBtn = e.target.closest('button[data-action="dec"]');
+  if(decBtn){
+    const id = decBtn.getAttribute('data-id'); if(id && cart[id]){ cart[id]--; if(cart[id]<=0) delete cart[id]; renderCart(); updateProgressBar(); }
+  }
+});
+
+// --- Product interactions are safe now ---
+function handleLogin(){
+  const v = (document.getElementById('inputAcct')||{value:''}).value.trim();
+  if(!v){ alert('Enter OPAY account number'); return; }
+  if(!state.users[v]) state.users[v] = {acct:v,purchases:[],balance:0,reviews:[]};
+  currentUser = state.users[v];
+  saveState(state);
+  renderUser();
+  closeModal('modalLogin');
+  alert('Logged in as ' + v);
+}
+
+function checkout(){
+  if(!currentUser){ alert('Please login before checkout'); openModal('modalLogin'); return; }
+  if(Object.keys(cart).length===0){ alert('Cart is empty'); return; }
+
+  const wk = getWeekKey();
+  const items = [];
+  Object.keys(cart).forEach(id=>{
+    const product = state.products.find(p=>p.id===id);
+    for(let i=0;i<cart[id];i++){
+      const rec = {id:product.id,title:product.title,price:product.price,date:nowISO(),week:wk,tx:uid(8)};
+      state.users[currentUser.acct].purchases.push(rec);
+      items.push(rec);
+    }
+  });
+  saveState(state);
+
+  const message = encodeURIComponent(`Order from CO-YUM\nAccount: ${currentUser.acct}\nItems:\n${items.map(it=>`- ${it.title} (₦${it.price})`).join('\n')}\nTotal: ₦${getCartTotal()}\nPlease confirm payment & delivery.`);
+  const phone = state.config.sellerPhone.replace(/\D/g,'');
+  const wa = `https://wa.me/${phone}?text=${message}`;
+  window.open(wa,'_blank');
+  cart = {}; renderCart(); renderUser(); renderProofList();
+  alert('Order sent to WhatsApp. Keep proof to claim quiz eligibility.');
+}
+
+// --- Quiz ---
+function openQuizModal(){
+  if(!currentUser){ alert('Please login to take quiz'); openModal('modalLogin'); return; }
+  if(!eligibleForQuiz(currentUser.acct)){ alert('You need at least two purchases this week to qualify.'); return; }
+  const today = new Date();
+  if(today.getDay() !== 6){
+    if(!confirm('Quiz is scheduled for Saturdays. Open now for testing?')) return;
+  }
+  buildQuizUI(); openModal('modalQuiz');
+}
+
+function eligibleForQuiz(acct){ return purchasesThisWeek(acct) >= 2 }
+
+function buildQuizUI(){
+  const area = document.getElementById('quizArea'); area.innerHTML = '';
+  quizState.answers = []; quizState.running=false; document.getElementById('quizTimer').textContent='00:00';
+  state.quizQuestions.forEach((q,idx)=>{
+    const block = document.createElement('div'); block.className='quiz-question';
+    block.innerHTML = `<div style="font-weight:800">Q${idx+1}. ${q.q}</div><div style="margin-top:8px" data-q="${idx}"></div>`;
+    const opts = block.querySelector('[data-q]');
+    q.choices.forEach((c,ci)=>{
+      const opt = document.createElement('div'); opt.className='quiz-option'; opt.textContent = c; opt.dataset.choice = ci; opt.dataset.qidx = idx;
+      opt.addEventListener('click', function(){
+        if(!quizState.running) return;
+        const qid = this.dataset.qidx;
+        document.querySelectorAll(`.quiz-option[data-qidx="${qid}"]`).forEach(o=>o.classList.remove('selected'));
+        this.classList.add('selected'); quizState.answers[qid] = Number(this.dataset.choice);
+      });
+      opts.appendChild(opt);
+    });
+    area.appendChild(block);
+  });
+}
+
+function startQuiz(){
+  if(quizState.running) return;
+  quizState.running = true; quizState.timeLeft = state.quizQuestions.length * 20; quizState.startedAt = new Date().toISOString();
+  tickTimer(); quizState.timer = setInterval(()=>{ quizState.timeLeft--; if(quizState.timeLeft<=0) finishQuiz(); else tickTimer(); },1000);
+  const btn = document.getElementById('startQuiz'); if(btn){ btn.disabled=true; btn.textContent='Quiz Running...' }
+}
+
+function tickTimer(){ const tm = quizState.timeLeft; const m = Math.floor(tm/60); const s = tm%60; const el = document.getElementById('quizTimer'); if(el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(tm<30 && el) el.style.color = 'var(--warning)'; }
+
+function finishQuiz(){
+  if(quizState.timer){ clearInterval(quizState.timer); quizState.timer=null }
+  quizState.running=false;
+  let score=0;
+  state.quizQuestions.forEach((q,idx)=>{ if(quizState.answers[idx] !== undefined && quizState.answers[idx] === q.answer) score++ });
+  const rec = { week:getWeekKey(), account:currentUser.acct, score, time:(new Date()-new Date(quizState.startedAt)), date:nowISO() };
+  state.leaderboard.push(rec); saveState(state);
+  alert(`Quiz finished — Score: ${score}/${state.quizQuestions.length}`);
+  closeModal('modalQuiz');
+  const btn=document.getElementById('startQuiz'); if(btn){ btn.disabled=false; btn.textContent='Start Quiz' }
+}
+
+// --- Leaderboard & Reviews ---
+function showLeaderboard(){
+  const week = getWeekKey();
+  const rows = state.leaderboard.filter(r=>r.week===week).sort((a,b)=> b.score - a.score || a.time - b.time);
+  let html = `<h3>Leaderboard — Week ${week}</h3><div class="card" style="margin-top:8px"><table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time ms</th></tr></thead><tbody>`;
+  if(rows.length===0) html += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+  else rows.forEach((r,i)=> html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}</td><td>${r.time}</td></tr>`);
+  html += `</tbody></table></div><div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
+  document.getElementById('reviewsArea').innerHTML = html; openModal('modalReviews');
+}
+
+function showReviews(){
+  const area = document.getElementById('reviewsArea'); area.innerHTML = '';
+  if(state.reviews.length===0) area.innerHTML = '<div class="center small muted">No reviews yet</div>';
+  else state.reviews.slice().reverse().forEach(r=>{
+    const c = document.createElement('div'); c.className='card'; c.style.marginBottom='10px';
+    c.innerHTML = `<div class="flex-between"><strong>${r.account}</strong><div class="small muted">${new Date(r.date).toLocaleString()}</div></div><div style="margin-top:8px">${r.text}</div>${r.img?'<div style="margin-top:8px"><img src="'+r.img+'" style="max-width:100%;border-radius:8px"></div>':''}`;
+    area.appendChild(c);
+  });
+  openModal('modalReviews');
+}
+
+function addReview(){
+  if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
+  const text = prompt('Write your review (short):'); if(!text) return;
+  const img = prompt('Optional: paste image URL (or leave blank)') || null;
+  state.reviews.push({ account: currentUser.acct, text, img, date: nowISO() }); saveState(state); alert('Thanks for your review!'); renderProofList();
+}
+
+// --- Admin functions ---
+function adminUnlock(){
+  const pass = (document.getElementById('adminPass')||{value:''}).value;
+  if(pass === state.config.adminPass){
+    document.getElementById('adminArea').style.display = 'block';
+    document.getElementById('sellerPhone').value = state.config.sellerPhone;
+    document.getElementById('prizeMin').value = state.config.prizeMin;
+    document.getElementById('prizeMax').value = state.config.prizeMax;
+    renderPayoutsAdmin(); alert('Admin unlocked');
+  } else alert('Wrong password');
+}
+
+function adminSaveConfig(){
+  const phone = (document.getElementById('sellerPhone')||{value:''}).value.trim();
+  const pmin = Number((document.getElementById('prizeMin')||{value:''}).value) || state.config.prizeMin;
+  const pmax = Number((document.getElementById('prizeMax')||{value:''}).value) || state.config.prizeMax;
+  if(phone) state.config.sellerPhone = phone;
+  state.config.prizeMin = pmin; state.config.prizeMax = pmax;
+  saveState(state); updateSellerPhone(); alert('Config saved');
+}
+
+function adminSaveQuestions(){
+  try{
+    const txt = (document.getElementById('newQuestions')||{value:''}).value.trim();
+    if(!txt){ alert('Paste JSON first'); return; }
+    const arr = JSON.parse(txt);
+    if(!Array.isArray(arr)){ alert('Questions JSON must be an array'); return; }
+    state.quizQuestions = arr; saveState(state); alert('Questions saved');
+  } catch(e){ alert('Invalid JSON: ' + e.message) }
+}
+
+function adminReset(){
+  if(!confirm('Reset leaderboard & payouts?')) return;
+  state.leaderboard = []; state.payouts = []; saveState(state); renderPayoutsAdmin(); renderProofList(); alert('Reset done');
+}
+
+function exportData(){ console.log('COYUM EXPORT', state); alert('Exported to console') }
+
+function renderPayoutsAdmin(){
+  const el = document.getElementById('payoutsAdmin'); el.innerHTML = '';
+  if(state.payouts.length===0) el.innerHTML = '<div class="small muted">No payouts recorded</div>';
+  else state.payouts.slice().reverse().forEach(p=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.style.padding='8px';
+    d.innerHTML = `<div class="flex-between"><div><strong>${p.account}</strong><div class="small muted">${new Date(p.date).toLocaleString()}</div></div><div style="font-weight:900">${formatN(p.amount)}</div></div>`;
+    el.appendChild(d);
+  });
+}
+
+function awardTopThisWeek(){
+  const wk = getWeekKey(); const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> b.score - a.score || a.time - b.time);
+  if(entries.length===0){ alert('No entries this week'); return; }
+  const top = entries[0];
+  const amount = Math.floor(Math.random() * (state.config.prizeMax - state.config.prizeMin + 1)) + state.config.prizeMin;
+  state.payouts.push({ account: top.account, amount, date: nowISO(), img:null, note:'Auto-awarded' });
+  if(!state.users[top.account]) state.users[top.account] = { acct:top.account, purchases:[], balance:0, reviews:[] };
+  state.users[top.account].balance = (state.users[top.account].balance||0) + amount;
+  saveState(state); renderPayoutsAdmin(); renderProofList(); renderUser(); alert(`Awarded ${formatN(amount)} to ${top.account}`);
+}
+
+// --- Utility UI wiring & init ---
+function updateSellerPhone(){ sellerPhoneDisplay.textContent = state.config.sellerPhone || '+234...'; }
+
+document.getElementById('loginBtn').addEventListener('click', ()=>openModal('modalLogin'));
+document.getElementById('doLogin').addEventListener('click', handleLogin);
+document.getElementById('checkoutBtn').addEventListener('click', checkout);
+document.getElementById('openQuiz').addEventListener('click', openQuizModal);
+document.getElementById('startQuiz').addEventListener('click', startQuiz);
+document.getElementById('viewLeaderboard').addEventListener('click', showLeaderboard);
+document.getElementById('openAdmin').addEventListener('click', ()=>openModal('modalAdmin'));
+document.getElementById('adminLoginBtn').addEventListener('click', adminUnlock);
+document.getElementById('saveQuizQ').addEventListener('click', adminSaveQuestions);
+document.getElementById('exportData').addEventListener('click', exportData);
+document.getElementById('adminResetBtn').addEventListener('click', adminReset);
+document.getElementById('awardTop').addEventListener('click', awardTopThisWeek);
+document.getElementById('viewHistory').addEventListener('click', ()=>{
+  if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
+  const items = (currentUser.purchases||[]).slice().reverse();
+  let html = `<h3>Purchase History</h3><div class="card" style="margin-top:8px">`;
+  if(items.length===0) html += '<div class="small muted center">No purchases</div>';
+  else { html += '<ul style="list-style:none;padding:0">'; items.forEach(p=> html += `<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)"><div class="flex-between"><div>${p.title}</div><div>${formatN(p.price)}</div></div><div class="small muted">${new Date(p.date).toLocaleString()}</div></li>`); html += '</ul>';}
+  html += `</div><div style="margin-top:10px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
+  document.getElementById('reviewsArea').innerHTML = html; openModal('modalReviews');
+});
+document.getElementById('addReviewBtn').addEventListener('click', addReview);
+document.getElementById('viewReviews').addEventListener('click', showReviews);
+document.getElementById('sellerPhone').addEventListener('change', adminSaveConfig);
+document.getElementById('prizeMin').addEventListener('change', adminSaveConfig);
+document.getElementById('prizeMax').addEventListener('change', adminSaveConfig);
+
+// modal close buttons (by attribute)
+document.querySelectorAll('[data-modal]').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    const id = btn.getAttribute('data-modal'); if(id) closeModal(id);
+  });
+});
+
+// modal outer click to close
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click', (e)=>{ if(e.target === m) m.classList.remove('active') });
+});
+
+// initialize UI
+renderProducts();
+renderCart();
+renderUser();
+updateSellerPhone();
+renderProofList();
+renderPayoutsAdmin();
+
+</script>
+</body>
+</html>

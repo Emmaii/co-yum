@@ -12,13 +12,9 @@
       --warning:#ff9800; --shadow: 0 8px 30px rgba(2,6,23,0.6); --radius:14px;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; 
-              background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); 
-              -webkit-font-smoothing:antialiased}
+    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); -webkit-font-smoothing:antialiased}
     .container{max-width:1150px;margin:0 auto;padding:20px}
-    header{position:sticky;top:0;z-index:40;
-           background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-           backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 10px}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061122}
@@ -29,7 +25,7 @@
     main{padding:22px 0}
     .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
     @media(max-width:980px){ .grid{grid-template-columns:1fr} .sidebar{position:static} }
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow); backdrop-filter: blur(10px);}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
     .card h2{margin:0 0 8px}
     .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
     .product{
@@ -38,7 +34,6 @@
       transition: transform 180ms ease, box-shadow 180ms ease;
       position:relative;
       display:flex;flex-direction:column;
-      backdrop-filter: blur(5px);
     }
     .product:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.6) }
     .img-wrap{position:relative;overflow:hidden}
@@ -61,16 +56,16 @@
     .center{text-align:center}
     .progress{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%}
-    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px);}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px; backdrop-filter: blur(5px);}
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03)}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px}
     .modal.active{display:flex}
-    .modal .panel{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);max-height:90vh;overflow:auto; backdrop-filter: blur(10px);}
+    .modal .panel{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);max-height:90vh;overflow:auto}
     .flex{display:flex;gap:10px}
     .flex-between{display:flex;justify-content:space-between;align-items:center}
     .small{font-size:13px;color:var(--muted)}
-    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%; backdrop-filter: blur(5px);}
-    .quiz-question{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px; backdrop-filter: blur(5px);}
-    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px; backdrop-filter: blur(5px);}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%}
+    .quiz-question{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px}
+    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px}
     .quiz-option.selected{background:rgba(255,123,84,0.18);border:1px solid var(--accent)}
     table{width:100%;border-collapse:collapse}
     table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
@@ -226,6 +221,7 @@
         </div>
 
         <nav>
+          <!-- added welcome element to avoid errors -->
           <div id="welcome" class="small muted" style="margin-right:8px">Not logged in</div>
 
           <button id="loginBtn" class="nav-btn"><i class="fas fa-user"></i>&nbsp;Login (OPAY)</button>
@@ -376,7 +372,7 @@
    Amplified UI version (products limited to two items)
    ========================= */
 
-const STORE_KEY = 'coyum_v5'; // new key for persistent data
+const STORE_KEY = 'coyum_v5'; // new key so fresh state
 const DEFAULT = {
   products: [
     {
@@ -392,7 +388,7 @@ const DEFAULT = {
       title:'Parfait',
       desc:'Creamy layered yogurt, crunchy granola, fresh seasonal fruits — a delightful premium parfait.',
       price:4500,
-      img:'https://images.unsplash.com/photo-1553563408-74d56255c6e9?auto=format&fit=crop&w=1200&q=60',
+      img:'https://images.unsplash.com/photo-1565953522043-37886c057f1e?auto=format&fit=crop&w=1200&q=60',
       badge: 'New'
     }
   ],
@@ -417,35 +413,22 @@ function loadState(){
       localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); 
       return JSON.parse(JSON.stringify(DEFAULT)); 
     } 
-    const loadedState = JSON.parse(s);
-    
-    // Ensure all data structures exist
-    if (!loadedState.users) loadedState.users = {};
-    if (!loadedState.leaderboard) loadedState.leaderboard = [];
-    if (!loadedState.reviews) loadedState.reviews = [];
-    if (!loadedState.payouts) loadedState.payouts = [];
-    if (!loadedState.config) loadedState.config = DEFAULT.config;
-    if (!loadedState.quizQuestions) loadedState.quizQuestions = DEFAULT.quizQuestions;
-    
-    return loadedState;
+    return JSON.parse(s);
   } catch(e){ 
-    console.error("Error loading state:", e);
     localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); 
     return JSON.parse(JSON.stringify(DEFAULT)); 
   } 
 }
 
 function saveState(s){ 
-  try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(s)); 
-  } catch(e) {
-    console.error("Error saving state:", e);
-  }
+  localStorage.setItem(STORE_KEY, JSON.stringify(s)); 
 }
 
 function uid(len=6){ return Math.random().toString(36).slice(2,2+len) }
 function nowISO(){ return new Date().toISOString() }
 function formatN(n){ return '₦'+Number(n).toLocaleString() }
+
+// Improved week key function to ensure data retention
 function getWeekKey(d=new Date()){
   const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const dayNum = tmp.getUTCDay() || 7;
@@ -535,7 +518,8 @@ function renderUser(){
 
 function purchasesThisWeek(acct){
   const u = state.users[acct]; if(!u) return 0;
-  const wk = getWeekKey(); return (u.purchases||[]).filter(p=>p.week===wk).length;
+  const wk = getWeekKey(); 
+  return (u.purchases||[]).filter(p=>p.week===wk).length;
 }
 
 function updateProgressBar(){
@@ -676,7 +660,7 @@ function finishQuiz(){
 
 // --- Leaderboard & Reviews ---
 function showLeaderboard(){
-  const area = document.getElementById('reviewsArea');
+  const area = document.getElementById('reviewsArea'); 
   area.innerHTML = '';
   
   // Show all weeks in tabs
@@ -685,41 +669,98 @@ function showLeaderboard(){
   let html = `<h3>Leaderboard History</h3>`;
   
   if (weeks.length === 0) {
-    html += '<div class="card"><div class="center small muted">No quiz entries yet</div></div>';
+    html += '<div class="card" style="margin-top:8px"><div class="center small muted">No quiz entries yet</div></div>';
   } else {
-    html += `<div class="card"><div class="small muted">Select a week to view:</div><div style="margin-top:8px">`;
+    html += '<div class="card" style="margin-top:8px">';
     
+    // Create tabs for each week
+    html += '<div class="flex" style="overflow-x:auto;margin-bottom:10px">';
     weeks.forEach(week => {
-      html += `<button class="nav-btn" style="margin:4px" onclick="showWeekLeaderboard('${week}')">${week}</button>`;
+      html += `<button class="nav-btn week-tab" data-week="${week}" style="white-space:nowrap">${week}</button>`;
     });
+    html += '</div>';
     
-    html += `</div></div>`;
+    // Default to showing the most recent week
+    const currentWeek = weeks[0];
+    const rows = state.leaderboard.filter(r => r.week === currentWeek)
+      .sort((a, b) => b.score - a.score || a.time - b.time);
     
-    // Show the most recent week by default
-    showWeekLeaderboard(weeks[0]);
+    html += `<h4>Week ${currentWeek}</h4>`;
+    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+    
+    if (rows.length === 0) {
+      html += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+    } else {
+      rows.forEach((r, i) => {
+        html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+      });
+    }
+    html += '</tbody></table>';
+    html += '</div>';
   }
   
   html += `<div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
+  
   area.innerHTML = html;
-  openModal('modalReviews');
-}
-
-function showWeekLeaderboard(week) {
-  const rows = state.leaderboard.filter(r => r.week === week).sort((a,b) => b.score - a.score || a.time - b.time);
-  let html = `<h4 style="margin-top:16px">Week ${week}</h4><div class="card" style="margin-top:8px"><table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>`;
   
-  if (rows.length === 0) {
-    html += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
-  } else {
-    rows.forEach((r, i) => {
-      html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+  // Add event listeners to week tabs
+  document.querySelectorAll('.week-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const week = this.getAttribute('data-week');
+      const rows = state.leaderboard.filter(r => r.week === week)
+        .sort((a, b) => b.score - a.score || a.time - b.time);
+      
+      let tableHtml = `<h4>Week ${week}</h4>`;
+      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+      
+      if (rows.length === 0) {
+        tableHtml += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+      } else {
+        rows.forEach((r, i) => {
+          tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+        });
+      }
+      tableHtml += '</tbody></table>';
+      
+      this.closest('.card').innerHTML = 
+        '<div class="flex" style="overflow-x:auto;margin-bottom:10px">' +
+        weeks.map(w => `<button class="nav-btn week-tab ${w === week ? 'primary' : ''}" data-week="${w}" style="white-space:nowrap">${w}</button>`).join('') +
+        '</div>' + tableHtml;
+        
+      // Reattach event listeners
+      document.querySelectorAll('.week-tab').forEach(t => {
+        t.addEventListener('click', function() {
+          const week = this.getAttribute('data-week');
+          const rows = state.leaderboard.filter(r => r.week === week)
+            .sort((a, b) => b.score - a.score || a.time - b.time);
+          
+          let tableHtml = `<h4>Week ${week}</h4>`;
+          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+          
+          if (rows.length === 0) {
+            tableHtml += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+          } else {
+            rows.forEach((r, i) => {
+              tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+            });
+          }
+          tableHtml += '</tbody></table>';
+          
+          this.closest('.card').innerHTML = 
+            '<div class="flex" style="overflow-x:auto;margin-bottom:10px">' +
+            weeks.map(w => `<button class="nav-btn week-tab ${w === week ? 'primary' : ''}" data-week="${w}" style="white-space:nowrap">${w}</button>`).join('') +
+            '</div>' + tableHtml;
+            
+          // Reattach event listeners again
+          document.querySelectorAll('.week-tab').forEach(tab => {
+            tab.addEventListener('click', arguments.callee);
+          });
+        });
+      });
     });
-  }
+  });
   
-  html += `</tbody></table></div>`;
-  
-  // Update the leaderboard area
-  document.getElementById('reviewsArea').insertAdjacentHTML('beforeend', html);
+  openModal('modalReviews');
 }
 
 function showReviews(){
@@ -730,7 +771,6 @@ function showReviews(){
     c.innerHTML = `<div class="flex-between"><strong>${r.account}</strong><div class="small muted">${new Date(r.date).toLocaleString()}</div></div><div style="margin-top:8px">${r.text}</div>${r.img?'<div style="margin-top:8px"><img src="'+r.img+'" style="max-width:100%;border-radius:8px"></div>':''}`;
     area.appendChild(c);
   });
-  area.innerHTML += `<div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
   openModal('modalReviews');
 }
 
@@ -738,10 +778,7 @@ function addReview(){
   if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
   const text = prompt('Write your review (short):'); if(!text) return;
   const img = prompt('Optional: paste image URL (or leave blank)') || null;
-  state.reviews.push({ account: currentUser.acct, text, img, date: nowISO() }); 
-  saveState(state); 
-  alert('Thanks for your review!'); 
-  renderProofList();
+  state.reviews.push({ account: currentUser.acct, text, img, date: nowISO() }); saveState(state); alert('Thanks for your review!'); renderProofList();
 }
 
 // --- Admin functions ---
@@ -781,15 +818,16 @@ function adminReset(){
 }
 
 function exportData(){ 
+  console.log('COYUM EXPORT', state); 
   const dataStr = JSON.stringify(state, null, 2);
   const dataBlob = new Blob([dataStr], {type: 'application/json'});
   const url = URL.createObjectURL(dataBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'coyum-data.json';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'coyum-data.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
   alert('Data exported as JSON file');
 }

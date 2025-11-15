@@ -69,6 +69,143 @@
     .quiz-option.selected{background:rgba(255,123,84,0.18);border:1px solid var(--accent)}
     table{width:100%;border-collapse:collapse}
     table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .header-row {
+        flex-direction: column;
+        gap: 12px;
+        padding: 10px 0;
+      }
+      
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+      }
+      
+      .nav-btn {
+        font-size: 14px;
+        padding: 6px 10px;
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+      }
+      
+      .grid {
+        gap: 15px;
+      }
+      
+      .products {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .product .body {
+        padding: 12px;
+      }
+      
+      .product img {
+        height: 160px;
+      }
+      
+      .card {
+        padding: 12px;
+      }
+      
+      .flex-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .modal .panel {
+        padding: 14px;
+        margin: 10px;
+      }
+      
+      .flex {
+        flex-direction: column;
+      }
+      
+      .quiz-question {
+        padding: 10px;
+      }
+      
+      .quiz-option {
+        padding: 8px;
+      }
+      
+      table {
+        font-size: 14px;
+      }
+      
+      table td, table th {
+        padding: 6px;
+      }
+      
+      footer {
+        padding: 12px;
+        font-size: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .brand {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+      }
+      
+      .logo {
+        width: 44px;
+        height: 44px;
+        font-size: 14px;
+      }
+      
+      h1 {
+        font-size: 16px;
+      }
+      
+      .nav-btn {
+        font-size: 12px;
+        padding: 5px 8px;
+        min-width: 100px;
+      }
+      
+      .product img {
+        height: 140px;
+      }
+      
+      .title {
+        font-size: 14px;
+      }
+      
+      .desc {
+        font-size: 12px;
+      }
+      
+      .price {
+        font-size: 14px;
+      }
+      
+      .btn {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+      
+      .modal .panel {
+        padding: 12px;
+      }
+      
+      .quiz-timer {
+        font-size: 18px;
+      }
+    }
   </style>
 </head>
 <body>

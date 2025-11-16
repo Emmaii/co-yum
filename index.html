@@ -326,7 +326,7 @@
             </div>
             
             <div id="countdownContainer" style="display: none;">
-              <div class="small muted center">Next quiz in:</div>
+              <div class="small muted center">Saturday Main Quiz in:</div>
               <div class="countdown">
                 <div class="countdown-item">
                   <div id="countdownDays" class="countdown-value">0</div>
@@ -458,7 +458,7 @@
    Updated with dynamic quiz system and fixes
    ========================= */
 
-const STORE_KEY = 'coyum_v7'; // new key for updated structure
+const STORE_KEY = 'coyum_v8'; // new key for updated structure
 const DEFAULT = {
   products: [
     {
@@ -590,17 +590,17 @@ function getQuizSettings() {
     return {
       name: 'Main Quiz',
       questions: 20,
-      timePerQuestion: 30, // seconds
+      totalTime: 180, // 3 minutes in seconds
       badgeClass: '',
-      description: 'Main weekly quiz - 20 questions, 10 minutes'
+      description: 'Main weekly quiz - 20 questions, 3 minutes'
     };
   } else { // Other days
     return {
       name: 'Mini Quiz',
       questions: 5,
-      timePerQuestion: 20, // seconds  
+      totalTime: 55, // 55 seconds  
       badgeClass: 'mini',
-      description: 'Daily mini quiz - 5 questions, 1 minute 40 seconds'
+      description: 'Daily mini quiz - 5 questions, 55 seconds'
     };
   }
 }
@@ -893,7 +893,7 @@ function checkout(){
   });
   saveState(state);
 
-  const message = encodeURIComponent(`Order from CO-YUM\nAccount: ${currentUser.acct}\nItems:\n${items.map(it=>`- ${it.title} (₦${it.price})`).join('\n')}\nTotal: ₦${getCartTotal()}\nPlease confirm payment & delivery.`);
+  const message = encodeURIComponent(`Order from CO-YUM\nAccount: ${currentUser.acct}\nItems:\n${items.map(it=>`- ${it.title} (₦${it.price})`).join('\n')}\nTotal: ₦${getCartTotal()}\nPlease send the account details.`);
   const phone = state.config.sellerPhone.replace(/\D/g,'');
   const wa = `https://wa.me/${phone}?text=${message}`;
   window.open(wa,'_blank');
@@ -969,7 +969,7 @@ function startQuiz(){
   
   const quizSettings = getQuizSettings();
   quizState.running = true; 
-  quizState.timeLeft = quizSettings.questions * quizSettings.timePerQuestion; 
+  quizState.timeLeft = quizSettings.totalTime; 
   quizState.startedAt = new Date().toISOString();
   
   tickTimer(); 

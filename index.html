@@ -455,10 +455,10 @@
 /* =========================
    CO-YUM single-file app
    HTML/CSS/JS only — uses localStorage
-   Updated with dynamic quiz system and fixes
+   Updated with enhanced quiz system and persistent storage
    ========================= */
 
-const STORE_KEY = 'coyum_v8'; // new key for updated structure
+const STORE_KEY = 'coyum_v9'; // new key for enhanced storage features
 const DEFAULT = {
   products: [
     {
@@ -509,7 +509,7 @@ const DEFAULT = {
   ]
 };
 
-// --- Helpers ---
+// --- Enhanced Storage & Data Management ---
 function loadState(){ 
   try{ 
     const s = localStorage.getItem(STORE_KEY); 
@@ -519,15 +519,42 @@ function loadState(){
     } 
     return JSON.parse(s);
   } catch(e){ 
+    console.error('Error loading state:', e);
     localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); 
     return JSON.parse(JSON.stringify(DEFAULT)); 
   } 
 }
 
 function saveState(s){ 
-  localStorage.setItem(STORE_KEY, JSON.stringify(s)); 
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(s)); 
+    return true;
+  } catch(e) {
+    console.error('Error saving state:', e);
+    return false;
+  }
 }
 
+// Enhanced data validation
+function validateQuizRecord(record) {
+  return record && 
+         typeof record.account === 'string' &&
+         typeof record.score === 'number' &&
+         typeof record.total === 'number' &&
+         typeof record.timeTaken === 'number' &&
+         typeof record.completionTime === 'string' &&
+         typeof record.week === 'string' &&
+         typeof record.quizType === 'string';
+}
+
+function validateReviewRecord(review) {
+  return review &&
+         typeof review.account === 'string' &&
+         typeof review.text === 'string' &&
+         typeof review.date === 'string';
+}
+
+// --- Enhanced Helper Functions ---
 function uid(len=6){ return Math.random().toString(36).slice(2,2+len) }
 function nowISO(){ return new Date().toISOString() }
 function formatN(n){ return '₦'+Number(n).toLocaleString() }
@@ -652,11 +679,19 @@ function updateCountdown() {
   document.getElementById('countdownSeconds').textContent = String(timeUntil.seconds).padStart(2, '0');
 }
 
-// --- App state ---
+// --- Enhanced App State ---
 let state = loadState();
 let currentUser = null;
 let cart = {};
-let quizState = { running:false, timeLeft:0, timer:null, answers:[], startedAt:null, currentQuestions: [] };
+let quizState = { 
+  running: false, 
+  timeLeft: 0, 
+  timer: null, 
+  answers: [], 
+  startedAt: null, 
+  currentQuestions: [],
+  completionTime: null 
+};
 
 // --- DOM picks ---
 const productsEl = document.getElementById('products');
@@ -675,7 +710,7 @@ const proofListEl = document.getElementById('proofList');
 // defensive find (some elements may not exist in edge cases)
 function $(id){ return document.getElementById(id) }
 
-// --- Render functions ---
+// --- Enhanced Render Functions ---
 function renderProducts(){
   productsEl.innerHTML = '';
   state.products.forEach(p=>{
@@ -855,7 +890,7 @@ document.addEventListener('click', (e)=>{
   }
 });
 
-// --- Product interactions are safe now ---
+// --- Enhanced Product interactions ---
 function handleLogin(){
   const v = (document.getElementById('inputAcct')||{value:''}).value.trim();
   if(!v){ alert('Enter OPAY account number'); return; }
@@ -901,7 +936,7 @@ function checkout(){
   alert('Order sent to WhatsApp. Keep proof to claim quiz eligibility.');
 }
 
-// --- Quiz ---
+// --- Enhanced Quiz System with Exact Completion Time ---
 function openQuizModal(){
   if(!currentUser){ alert('Please login to take quiz'); openModal('modalLogin'); return; }
   
@@ -930,6 +965,7 @@ function buildQuizUI(){
   quizState.currentQuestions = getRandomQuestions(quizSettings.questions);
   quizState.answers = []; 
   quizState.running=false; 
+  quizState.completionTime = null;
   document.getElementById('quizTimer').textContent='00:00';
   
   // Update modal title with quiz type
@@ -971,6 +1007,7 @@ function startQuiz(){
   quizState.running = true; 
   quizState.timeLeft = quizSettings.totalTime; 
   quizState.startedAt = new Date().toISOString();
+  quizState.completionTime = null;
   
   tickTimer(); 
   quizState.timer = setInterval(()=>{ 
@@ -1000,6 +1037,9 @@ function finishQuiz(){
     clearInterval(quizState.timer); 
     quizState.timer=null 
   }
+  
+  // Record exact completion time
+  quizState.completionTime = new Date().toISOString();
   quizState.running=false;
   
   let score=0;
@@ -1007,20 +1047,32 @@ function finishQuiz(){
     if(quizState.answers[idx] !== undefined && quizState.answers[idx] === q.answer) score++
   });
   
+  // Calculate time taken (in seconds)
+  const timeTaken = quizState.timeLeft <= 0 ? 
+    getQuizSettings().totalTime : // Time ran out
+    getQuizSettings().totalTime - quizState.timeLeft; // User finished early
+  
+  // Create enhanced quiz record with exact completion time
   const rec = { 
-    week:getWeekKey(), 
-    account:currentUser.acct, 
+    week: getWeekKey(), 
+    account: currentUser.acct, 
     score, 
     total: quizState.currentQuestions.length,
-    time:(new Date()-new Date(quizState.startedAt)), 
-    date:nowISO(),
+    timeTaken: timeTaken, // Time taken in seconds
+    completionTime: quizState.completionTime, // Exact timestamp
+    date: nowISO(),
     quizType: getQuizSettings().name
   };
   
-  state.leaderboard.push(rec); 
-  saveState(state);
+  // Validate and save the record
+  if (validateQuizRecord(rec)) {
+    state.leaderboard.push(rec); 
+    saveState(state);
+    alert(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}\nTime: ${timeTaken} seconds`);
+  } else {
+    alert('Error: Quiz data could not be saved properly.');
+  }
   
-  alert(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}`);
   closeModal('modalQuiz');
   
   const btn=document.getElementById('startQuiz'); 
@@ -1030,7 +1082,7 @@ function finishQuiz(){
   }
 }
 
-// --- Leaderboard & Reviews ---
+// --- Enhanced Leaderboard & Reviews with Persistent Storage ---
 function showLeaderboard(){
   const area = document.getElementById('reviewsArea'); 
   area.innerHTML = '';
@@ -1038,7 +1090,7 @@ function showLeaderboard(){
   // Show all weeks in tabs
   const weeks = [...new Set(state.leaderboard.map(r => r.week))].sort().reverse();
   
-  let html = `<h3>Leaderboard History</h3>`;
+  let html = `<h3>Leaderboard History (Persistent Storage)</h3>`;
   
   if (weeks.length === 0) {
     html += '<div class="card" style="margin-top:8px"><div class="center small muted">No quiz entries yet</div></div>';
@@ -1055,16 +1107,28 @@ function showLeaderboard(){
     // Default to showing the most recent week
     const currentWeek = weeks[0];
     const rows = state.leaderboard.filter(r => r.week === currentWeek)
-      .sort((a, b) => b.score - a.score || a.time - b.time);
+      .sort((a, b) => {
+        // Sort by score (descending), then by time taken (ascending - faster is better)
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTaken - b.timeTaken;
+      });
     
     html += `<h4>Week ${currentWeek}</h4>`;
-    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
+    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
     
     if (rows.length === 0) {
-      html += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
+      html += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
     } else {
       rows.forEach((r, i) => {
-        html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
+        const completionTime = new Date(r.completionTime || r.date).toLocaleString();
+        html += `<tr>
+          <td>${i+1}</td>
+          <td>${r.account}</td>
+          <td>${r.score}/${r.total}</td>
+          <td>${r.timeTaken}</td>
+          <td class="small">${completionTime}</td>
+          <td>${r.quizType || 'Main'}</td>
+        </tr>`;
       });
     }
     html += '</tbody></table>';
@@ -1080,16 +1144,27 @@ function showLeaderboard(){
     tab.addEventListener('click', function() {
       const week = this.getAttribute('data-week');
       const rows = state.leaderboard.filter(r => r.week === week)
-        .sort((a, b) => b.score - a.score || a.time - b.time);
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.timeTaken - b.timeTaken;
+        });
       
       let tableHtml = `<h4>Week ${week}</h4>`;
-      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
+      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
       
       if (rows.length === 0) {
-        tableHtml += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
+        tableHtml += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
       } else {
         rows.forEach((r, i) => {
-          tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
+          const completionTime = new Date(r.completionTime || r.date).toLocaleString();
+          tableHtml += `<tr>
+            <td>${i+1}</td>
+            <td>${r.account}</td>
+            <td>${r.score}/${r.total}</td>
+            <td>${r.timeTaken}</td>
+            <td class="small">${completionTime}</td>
+            <td>${r.quizType || 'Main'}</td>
+          </tr>`;
         });
       }
       tableHtml += '</tbody></table>';
@@ -1104,16 +1179,27 @@ function showLeaderboard(){
         t.addEventListener('click', function() {
           const week = this.getAttribute('data-week');
           const rows = state.leaderboard.filter(r => r.week === week)
-            .sort((a, b) => b.score - a.score || a.time - b.time);
+            .sort((a, b) => {
+              if (b.score !== a.score) return b.score - a.score;
+              return a.timeTaken - b.timeTaken;
+            });
           
           let tableHtml = `<h4>Week ${week}</h4>`;
-          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
+          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
           
           if (rows.length === 0) {
-            tableHtml += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
+            tableHtml += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
           } else {
             rows.forEach((r, i) => {
-              tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
+              const completionTime = new Date(r.completionTime || r.date).toLocaleString();
+              tableHtml += `<tr>
+                <td>${i+1}</td>
+                <td>${r.account}</td>
+                <td>${r.score}/${r.total}</td>
+                <td>${r.timeTaken}</td>
+                <td class="small">${completionTime}</td>
+                <td>${r.quizType || 'Main'}</td>
+              </tr>`;
             });
           }
           tableHtml += '</tbody></table>';
@@ -1136,24 +1222,67 @@ function showLeaderboard(){
 }
 
 function showReviews(){
-  const area = document.getElementById('reviewsArea'); area.innerHTML = '';
-  if(state.reviews.length===0) area.innerHTML = '<div class="center small muted">No reviews yet</div>';
-  else state.reviews.slice().reverse().forEach(r=>{
-    const c = document.createElement('div'); c.className='card'; c.style.marginBottom='10px';
-    c.innerHTML = `<div class="flex-between"><strong>${r.account}</strong><div class="small muted">${new Date(r.date).toLocaleString()}</div></div><div style="margin-top:8px">${r.text}</div>${r.img?'<div style="margin-top:8px"><img src="'+r.img+'" style="max-width:100%;border-radius:8px"></div>':''}`;
-    area.appendChild(c);
-  });
+  const area = document.getElementById('reviewsArea'); 
+  area.innerHTML = '<h3>Brand Reviews (Persistent Storage)</h3>';
+  
+  if(state.reviews.length===0) {
+    area.innerHTML += '<div class="center small muted">No reviews yet</div>';
+  } else {
+    state.reviews.slice().reverse().forEach(r=>{
+      const c = document.createElement('div'); 
+      c.className='card'; 
+      c.style.marginBottom='10px';
+      c.innerHTML = `
+        <div class="flex-between">
+          <strong>${r.account}</strong>
+          <div class="small muted">${new Date(r.date).toLocaleString()}</div>
+        </div>
+        <div style="margin-top:8px">${r.text}</div>
+        ${r.rating ? `<div style="margin-top:6px"><strong>Rating:</strong> ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>` : ''}
+        ${r.img?'<div style="margin-top:8px"><img src="'+r.img+'" style="max-width:100%;border-radius:8px"></div>':''}
+      `;
+      area.appendChild(c);
+    });
+  }
+  
+  area.innerHTML += `<div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
   openModal('modalReviews');
 }
 
 function addReview(){
   if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
-  const text = prompt('Write your review (short):'); if(!text) return;
+  const text = prompt('Write your review (short):'); 
+  if(!text) return;
+  
+  const ratingInput = prompt('Optional: Enter rating (1-5 stars) or leave blank:');
+  let rating = null;
+  if (ratingInput && !isNaN(ratingInput) && ratingInput >= 1 && ratingInput <= 5) {
+    rating = parseInt(ratingInput);
+  }
+  
   const img = prompt('Optional: paste image URL (or leave blank)') || null;
-  state.reviews.push({ account: currentUser.acct, text, img, date: nowISO() }); saveState(state); alert('Thanks for your review!'); renderProofList();
+  
+  // Create enhanced review record
+  const review = { 
+    account: currentUser.acct, 
+    text, 
+    rating,
+    img, 
+    date: nowISO() 
+  };
+  
+  // Validate and save the review
+  if (validateReviewRecord(review)) {
+    state.reviews.push(review); 
+    saveState(state); 
+    alert('Thanks for your review!'); 
+    renderProofList();
+  } else {
+    alert('Error: Review could not be saved properly.');
+  }
 }
 
-// --- Admin functions ---
+// --- Enhanced Admin functions ---
 function adminUnlock(){
   const pass = (document.getElementById('adminPass')||{value:''}).value;
   if(pass === state.config.adminPass){
@@ -1217,7 +1346,10 @@ function renderPayoutsAdmin(){
 
 function awardTopThisWeek(){
   const wk = getWeekKey(); 
-  const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> b.score - a.score || a.time - b.time);
+  const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.timeTaken - b.timeTaken;
+  });
   if(entries.length===0){ alert('No entries this week'); return; }
   const top = entries[0];
   const amount = Math.floor(Math.random() * (state.config.prizeMax - state.config.prizeMin + 1)) + state.config.prizeMin;

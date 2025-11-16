@@ -70,6 +70,50 @@
     table{width:100%;border-collapse:collapse}
     table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
     
+    /* Quiz Status Styles */
+    .quiz-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .quiz-badge {
+      background: var(--accent);
+      color: #061122;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .quiz-badge.prep {
+      background: var(--warning);
+    }
+    
+    /* Countdown Timer */
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .countdown-item {
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+      min-width: 50px;
+    }
+    .countdown-value {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .countdown-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    
     /* Mobile Responsive Styles */
     @media (max-width: 768px) {
       .container {
@@ -152,6 +196,19 @@
         padding: 12px;
         font-size: 12px;
       }
+      
+      .countdown {
+        gap: 5px;
+      }
+      
+      .countdown-item {
+        min-width: 40px;
+        padding: 6px;
+      }
+      
+      .countdown-value {
+        font-size: 16px;
+      }
     }
     
     @media (max-width: 480px) {
@@ -221,7 +278,6 @@
         </div>
 
         <nav>
-          <!-- added welcome element to avoid errors -->
           <div id="welcome" class="small muted" style="margin-right:8px">Not logged in</div>
 
           <button id="loginBtn" class="nav-btn"><i class="fas fa-user"></i>&nbsp;Login (OPAY)</button>
@@ -241,7 +297,7 @@
           <div class="card">
             <div class="flex-between">
               <div>
-                <h2>Menu — Fresh Sandwiches</h2>
+                <h2>Menu — Fresh Sandwiches & Smoothies</h2>
                 <div class="small muted">Order online & qualify for weekly quiz prizes</div>
               </div>
               <div class="small muted"><i class="fas fa-phone"></i>&nbsp;Seller WhatsApp: <span id="sellerPhoneDisplay">+2348103606602</span></div>
@@ -254,20 +310,46 @@
             <h3>How CO-YUM Works</h3>
             <ol class="small muted" style="margin-top:8px">
               <li>Login with your OPAY account number (we use it to identify you).</li>
-              <li>Buy at least <strong>two sandwiches</strong> within the same week to qualify for Saturday's quiz.</li>
+              <li>Buy at least <strong>two sandwiches</strong> OR <strong>one smoothie</strong> within the same week to qualify for Saturday's quiz.</li>
               <li>On Saturday, eligible users take a timed quiz — top scorer wins ₦5,000–₦10,000.</li>
               <li>Checkout redirects to WhatsApp with a pre-filled order.</li>
             </ol>
           </div>
 
           <div class="card" style="margin-top:14px">
-            <h3>Quiz — Saturday only</h3>
-            <div class="small muted" id="quizInfo">Quiz is available on Saturdays only. Eligibility: 2+ purchases in the same week.</div>
+            <div class="quiz-status">
+              <div id="quizBadge" class="quiz-badge">QUIZ DAY</div>
+              <div id="quizStatusText" class="small">Quiz is available today!</div>
+            </div>
+            
+            <div id="countdownContainer" style="display: none;">
+              <div class="small muted center">Next quiz in:</div>
+              <div class="countdown">
+                <div class="countdown-item">
+                  <div id="countdownDays" class="countdown-value">0</div>
+                  <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-item">
+                  <div id="countdownHours" class="countdown-value">0</div>
+                  <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                  <div id="countdownMinutes" class="countdown-value">0</div>
+                  <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                  <div id="countdownSeconds" class="countdown-value">0</div>
+                  <div class="countdown-label">Seconds</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="small muted" id="quizInfo">Eligibility: 2+ sandwiches OR 1+ smoothie in the same week.</div>
 
             <div style="margin-top:12px">
               <div class="flex-between">
                 <div class="small">Progress to qualify</div>
-                <div id="progressText" class="small muted">0/2 purchases</div>
+                <div id="progressText" class="small muted">0/2 sandwiches or 0/1 smoothie</div>
               </div>
               <div class="progress" style="margin-top:8px"><i id="progressFill" style="width:0%"></i></div>
             </div>
@@ -296,7 +378,8 @@
             <h3>Your Profile</h3>
             <div style="margin-top:8px" class="small muted">
               <div class="flex-between"><span>Account:</span><span id="acctNumber">—</span></div>
-              <div class="flex-between" style="margin-top:6px"><span>Purchases this week:</span><span id="purchasesCount">0</span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Sandwiches this week:</span><span id="sandwichesCount">0</span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Smoothies this week:</span><span id="smoothiesCount">0</span></div>
               <div class="flex-between" style="margin-top:6px"><span>Balance:</span><span>₦<span id="balance">0</span></span></div>
             </div>
             <div style="margin-top:12px"><button id="viewHistory" class="nav-btn" style="width:100%"> <i class="fas fa-history"></i>&nbsp;Purchase History</button></div>
@@ -369,10 +452,10 @@
 /* =========================
    CO-YUM single-file app
    HTML/CSS/JS only — uses localStorage
-   Amplified UI version (products limited to two items)
+   Updated with local images and new quiz eligibility
    ========================= */
 
-const STORE_KEY = 'coyum_v5'; // new key so fresh state
+const STORE_KEY = 'coyum_v6'; // new key so fresh state
 const DEFAULT = {
   products: [
     {
@@ -380,16 +463,18 @@ const DEFAULT = {
       title:'Classic Chicken Sandwich',
       desc:'Tender, juicy chicken breast, crisp lettuce, vine-ripened tomato & CO-YUM signature sauce on toasted bread.',
       price:2500,
-      img:'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1200&q=60',
-      badge: 'Best seller'
+      img:'sandwich.jpg',
+      badge: 'Best seller',
+      type: 'sandwich'
     },
     {
       id:'s2',
-      title:'Parfait',
-      desc:'Creamy layered yogurt, crunchy granola, fresh seasonal fruits — a delightful premium parfait.',
+      title:'Premium Fruit Smoothie',
+      desc:'Blend of fresh seasonal fruits, creamy yogurt, and natural sweeteners for a refreshing healthy drink.',
       price:4500,
-      img:'https://images.unsplash.com/photo-1565953522043-37886c057f1e?auto=format&fit=crop&w=1200&q=60',
-      badge: 'New'
+      img:'smoothie.jpg',
+      badge: 'New',
+      type: 'smoothie'
     }
   ],
   users:{},
@@ -438,6 +523,87 @@ function getWeekKey(d=new Date()){
   return tmp.getUTCFullYear() + '-W' + String(weekNo).padStart(2,'0');
 }
 
+// Get next Saturday
+function getNextSaturday() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+  const daysUntilSaturday = dayOfWeek === 6 ? 7 : (6 - dayOfWeek + 7) % 7;
+  
+  const nextSaturday = new Date(today);
+  nextSaturday.setDate(today.getDate() + daysUntilSaturday);
+  nextSaturday.setHours(0, 0, 0, 0); // Set to start of day
+  
+  return nextSaturday;
+}
+
+// Calculate time until next Saturday
+function getTimeUntilNextSaturday() {
+  const now = new Date();
+  const nextSaturday = getNextSaturday();
+  
+  // If it's already Saturday, set to next week
+  if (now.getDay() === 6 && now < nextSaturday) {
+    // It's Saturday but before the quiz time
+    return {
+      days: 0,
+      hours: nextSaturday.getHours() - now.getHours(),
+      minutes: nextSaturday.getMinutes() - now.getMinutes(),
+      seconds: nextSaturday.getSeconds() - now.getSeconds()
+    };
+  } else {
+    const diff = nextSaturday.getTime() - now.getTime();
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return { days, hours, minutes, seconds };
+  }
+}
+
+// Update countdown display
+function updateCountdown() {
+  const timeUntil = getTimeUntilNextSaturday();
+  
+  document.getElementById('countdownDays').textContent = String(timeUntil.days).padStart(2, '0');
+  document.getElementById('countdownHours').textContent = String(timeUntil.hours).padStart(2, '0');
+  document.getElementById('countdownMinutes').textContent = String(timeUntil.minutes).padStart(2, '0');
+  document.getElementById('countdownSeconds').textContent = String(timeUntil.seconds).padStart(2, '0');
+}
+
+// Update quiz status based on day of week
+function updateQuizStatus() {
+  const today = new Date();
+  const isSaturday = today.getDay() === 6;
+  const quizBadge = document.getElementById('quizBadge');
+  const quizStatusText = document.getElementById('quizStatusText');
+  const countdownContainer = document.getElementById('countdownContainer');
+  const openQuizBtn = document.getElementById('openQuiz');
+  
+  if (isSaturday) {
+    quizBadge.textContent = 'QUIZ DAY';
+    quizBadge.className = 'quiz-badge';
+    quizStatusText.textContent = 'Quiz is available today!';
+    countdownContainer.style.display = 'none';
+    openQuizBtn.disabled = false;
+  } else {
+    quizBadge.textContent = 'QUIZ PREP';
+    quizBadge.className = 'quiz-badge prep';
+    quizStatusText.textContent = 'Prepare for the next quiz on Saturday';
+    countdownContainer.style.display = 'block';
+    openQuizBtn.disabled = true;
+    
+    // Update countdown
+    updateCountdown();
+    
+    // Set interval to update countdown every second
+    if (!window.countdownInterval) {
+      window.countdownInterval = setInterval(updateCountdown, 1000);
+    }
+  }
+}
+
 // --- App state ---
 let state = loadState();
 let currentUser = null;
@@ -451,7 +617,8 @@ const cartTotalEl = document.getElementById('cartTotal');
 const sellerPhoneDisplay = document.getElementById('sellerPhoneDisplay');
 const welcomeEl = document.getElementById('welcome');
 const acctNumberEl = document.getElementById('acctNumber');
-const purchasesCountEl = document.getElementById('purchasesCount');
+const sandwichesCountEl = document.getElementById('sandwichesCount');
+const smoothiesCountEl = document.getElementById('smoothiesCount');
 const balanceEl = document.getElementById('balance');
 const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
@@ -505,30 +672,56 @@ function renderUser(){
   if(currentUser){
     welcomeEl.textContent = `Hi, ${currentUser.acct}`;
     acctNumberEl.textContent = currentUser.acct;
-    purchasesCountEl.textContent = purchasesThisWeek(currentUser.acct);
+    
+    const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
+    sandwichesCountEl.textContent = sandwiches;
+    smoothiesCountEl.textContent = smoothies;
+    
     balanceEl.textContent = currentUser.balance;
   } else {
     welcomeEl.textContent = 'Not logged in';
     acctNumberEl.textContent = '—';
-    purchasesCountEl.textContent = '0';
+    sandwichesCountEl.textContent = '0';
+    smoothiesCountEl.textContent = '0';
     balanceEl.textContent = '0';
   }
   updateProgressBar();
 }
 
 function purchasesThisWeek(acct){
-  const u = state.users[acct]; if(!u) return 0;
+  const u = state.users[acct]; 
+  if(!u) return { sandwiches: 0, smoothies: 0 };
+  
   const wk = getWeekKey(); 
-  return (u.purchases||[]).filter(p=>p.week===wk).length;
+  const weekPurchases = (u.purchases||[]).filter(p=>p.week===wk);
+  
+  const sandwiches = weekPurchases.filter(p => p.type === 'sandwich').length;
+  const smoothies = weekPurchases.filter(p => p.type === 'smoothie').length;
+  
+  return { sandwiches, smoothies };
 }
 
 function updateProgressBar(){
-  const purchases = currentUser ? purchasesThisWeek(currentUser.acct) : 0;
-  const percent = Math.min(100, Math.round((purchases/2)*100));
+  if (!currentUser) {
+    progressFill.style.width = '0%';
+    progressText.textContent = '0/2 sandwiches or 0/1 smoothie';
+    return;
+  }
+  
+  const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
+  
+  // Check if eligible (2+ sandwiches OR 1+ smoothie)
+  const isEligible = sandwiches >= 2 || smoothies >= 1;
+  const percent = isEligible ? 100 : Math.min(100, Math.round((Math.max(sandwiches/2, smoothies/1)) * 100));
+  
   progressFill.style.width = percent + '%';
-  progressText.textContent = `${purchases}/2 purchases`;
-  if(purchases>=2) progressFill.style.background = 'linear-gradient(90deg, #4caf50, #66bb6a)';
-  else progressFill.style.background = '';
+  progressText.textContent = `${sandwiches}/2 sandwiches or ${smoothies}/1 smoothie`;
+  
+  if(isEligible) {
+    progressFill.style.background = 'linear-gradient(90deg, #4caf50, #66bb6a)';
+  } else {
+    progressFill.style.background = '';
+  }
 }
 
 function renderProofList(){
@@ -588,7 +781,15 @@ function checkout(){
   Object.keys(cart).forEach(id=>{
     const product = state.products.find(p=>p.id===id);
     for(let i=0;i<cart[id];i++){
-      const rec = {id:product.id,title:product.title,price:product.price,date:nowISO(),week:wk,tx:uid(8)};
+      const rec = {
+        id:product.id,
+        title:product.title,
+        price:product.price,
+        type: product.type,
+        date:nowISO(),
+        week:wk,
+        tx:uid(8)
+      };
       state.users[currentUser.acct].purchases.push(rec);
       items.push(rec);
     }
@@ -606,15 +807,24 @@ function checkout(){
 // --- Quiz ---
 function openQuizModal(){
   if(!currentUser){ alert('Please login to take quiz'); openModal('modalLogin'); return; }
-  if(!eligibleForQuiz(currentUser.acct)){ alert('You need at least two purchases this week to qualify.'); return; }
+  if(!eligibleForQuiz(currentUser.acct)){ 
+    const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
+    alert(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify.`); 
+    return; 
+  }
+  
   const today = new Date();
   if(today.getDay() !== 6){
     if(!confirm('Quiz is scheduled for Saturdays. Open now for testing?')) return;
   }
+  
   buildQuizUI(); openModal('modalQuiz');
 }
 
-function eligibleForQuiz(acct){ return purchasesThisWeek(acct) >= 2 }
+function eligibleForQuiz(acct){ 
+  const { sandwiches, smoothies } = purchasesThisWeek(acct);
+  return sandwiches >= 2 || smoothies >= 1;
+}
 
 function buildQuizUI(){
   const area = document.getElementById('quizArea'); area.innerHTML = '';
@@ -902,6 +1112,7 @@ renderUser();
 updateSellerPhone();
 renderProofList();
 renderPayoutsAdmin();
+updateQuizStatus();
 
 </script>
 </body>

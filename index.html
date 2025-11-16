@@ -88,6 +88,9 @@
     .quiz-badge.prep {
       background: var(--warning);
     }
+    .quiz-badge.mini {
+      background: var(--success);
+    }
     
     /* Countdown Timer */
     .countdown {
@@ -452,10 +455,10 @@
 /* =========================
    CO-YUM single-file app
    HTML/CSS/JS only — uses localStorage
-   Updated with local images and new quiz eligibility
+   Updated with dynamic quiz system and fixes
    ========================= */
 
-const STORE_KEY = 'coyum_v6'; // new key so fresh state
+const STORE_KEY = 'coyum_v7'; // new key for updated structure
 const DEFAULT = {
   products: [
     {
@@ -486,7 +489,23 @@ const DEFAULT = {
     {q:'Which food group is a primary source of dietary fibre?', choices:['Fruits & vegetables','Oils','Sweets','Soda'], answer:0},
     {q:'Which vitamin is abundant in citrus fruits?', choices:['Vitamin A','Vitamin C','Vitamin K','Vitamin D'], answer:1},
     {q:'What is a healthy protein source for vegetarians?', choices:['Lentils','Bacon','Soda','Candy'], answer:0},
-    {q:'Which nutrient helps build and repair body tissues?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0}
+    {q:'Which nutrient helps build and repair body tissues?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0},
+    {q:'How many servings of vegetables should you eat daily?', choices:['1-2','3-5','6-8','9+'], answer:1},
+    {q:'Which mineral is important for bone health?', choices:['Iron','Calcium','Sodium','Potassium'], answer:1},
+    {q:'What percentage of your body is water?', choices:['30%','50%','60%','80%'], answer:2},
+    {q:'Which is a complex carbohydrate?', choices:['White bread','Brown rice','Sugar','Honey'], answer:1},
+    {q:'What is the main function of carbohydrates?', choices:['Build muscle','Provide energy','Insulate organs','Transport oxygen'], answer:1},
+    {q:'Which food is high in omega-3 fatty acids?', choices:['Salmon','Beef','Cheese','Bread'], answer:0},
+    {q:'What does BMI stand for?', choices:['Body Mass Index','Basic Metabolic Indicator','Bone Marrow Index','Blood Measurement Index'], answer:0},
+    {q:'Which vitamin is produced when skin is exposed to sunlight?', choices:['Vitamin A','Vitamin C','Vitamin D','Vitamin K'], answer:2},
+    {q:'What is the recommended daily water intake?', choices:['1-2 glasses','4-6 glasses','8-10 glasses','12+ glasses'], answer:2},
+    {q:'Which food is a good source of probiotics?', choices:['Yogurt','Bread','Rice','Meat'], answer:0},
+    {q:'What nutrient helps with muscle recovery after exercise?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0},
+    {q:'Which fruit is highest in potassium?', choices:['Apple','Orange','Banana','Grapes'], answer:2},
+    {q:'What is the role of antioxidants?', choices:['Build muscle','Protect cells from damage','Provide energy','Aid digestion'], answer:1},
+    {q:'Which is a whole grain?', choices:['White bread','White rice','Oatmeal','Pasta'], answer:2},
+    {q:'What is the main sugar found in milk?', choices:['Fructose','Glucose','Lactose','Sucrose'], answer:2},
+    {q:'Which mineral is important for carrying oxygen in blood?', choices:['Calcium','Iron','Sodium','Potassium'], answer:1}
   ]
 };
 
@@ -562,14 +581,34 @@ function getTimeUntilNextSaturday() {
   }
 }
 
-// Update countdown display
-function updateCountdown() {
-  const timeUntil = getTimeUntilNextSaturday();
+// Get quiz settings based on day of week
+function getQuizSettings() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
   
-  document.getElementById('countdownDays').textContent = String(timeUntil.days).padStart(2, '0');
-  document.getElementById('countdownHours').textContent = String(timeUntil.hours).padStart(2, '0');
-  document.getElementById('countdownMinutes').textContent = String(timeUntil.minutes).padStart(2, '0');
-  document.getElementById('countdownSeconds').textContent = String(timeUntil.seconds).padStart(2, '0');
+  if (dayOfWeek === 6) { // Saturday
+    return {
+      name: 'Main Quiz',
+      questions: 20,
+      timePerQuestion: 30, // seconds
+      badgeClass: '',
+      description: 'Main weekly quiz - 20 questions, 10 minutes'
+    };
+  } else { // Other days
+    return {
+      name: 'Mini Quiz',
+      questions: 5,
+      timePerQuestion: 20, // seconds  
+      badgeClass: 'mini',
+      description: 'Daily mini quiz - 5 questions, 1 minute 40 seconds'
+    };
+  }
+}
+
+// Get random questions from pool
+function getRandomQuestions(count) {
+  const shuffled = [...state.quizQuestions].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
 }
 
 // Update quiz status based on day of week
@@ -580,19 +619,18 @@ function updateQuizStatus() {
   const quizStatusText = document.getElementById('quizStatusText');
   const countdownContainer = document.getElementById('countdownContainer');
   const openQuizBtn = document.getElementById('openQuiz');
+  const quizSettings = getQuizSettings();
+  
+  quizBadge.textContent = quizSettings.name.toUpperCase();
+  quizBadge.className = `quiz-badge ${quizSettings.badgeClass}`;
+  quizStatusText.textContent = quizSettings.description;
   
   if (isSaturday) {
-    quizBadge.textContent = 'QUIZ DAY';
-    quizBadge.className = 'quiz-badge';
-    quizStatusText.textContent = 'Quiz is available today!';
     countdownContainer.style.display = 'none';
     openQuizBtn.disabled = false;
   } else {
-    quizBadge.textContent = 'QUIZ PREP';
-    quizBadge.className = 'quiz-badge prep';
-    quizStatusText.textContent = 'Prepare for the next quiz on Saturday';
     countdownContainer.style.display = 'block';
-    openQuizBtn.disabled = true;
+    openQuizBtn.disabled = false; // Enable quiz for all days now
     
     // Update countdown
     updateCountdown();
@@ -604,11 +642,21 @@ function updateQuizStatus() {
   }
 }
 
+// Update countdown display
+function updateCountdown() {
+  const timeUntil = getTimeUntilNextSaturday();
+  
+  document.getElementById('countdownDays').textContent = String(timeUntil.days).padStart(2, '0');
+  document.getElementById('countdownHours').textContent = String(timeUntil.hours).padStart(2, '0');
+  document.getElementById('countdownMinutes').textContent = String(timeUntil.minutes).padStart(2, '0');
+  document.getElementById('countdownSeconds').textContent = String(timeUntil.seconds).padStart(2, '0');
+}
+
 // --- App state ---
 let state = loadState();
 let currentUser = null;
 let cart = {};
-let quizState = { running:false, timeLeft:0, timer:null, answers:[], startedAt:null };
+let quizState = { running:false, timeLeft:0, timer:null, answers:[], startedAt:null, currentQuestions: [] };
 
 // --- DOM picks ---
 const productsEl = document.getElementById('products');
@@ -635,7 +683,7 @@ function renderProducts(){
     div.innerHTML = `
       <div class="img-wrap">
         ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
-        <img src="${p.img}" alt="${p.title}">
+        <img src="${p.img}" alt="${p.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWEyNjNmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
       </div>
       <div class="body">
         <div>
@@ -655,18 +703,43 @@ function renderProducts(){
 function renderCart(){
   cartListEl.innerHTML = '';
   const ids = Object.keys(cart);
-  if(ids.length === 0){ cartListEl.innerHTML = '<div class="center small muted">Cart is empty</div>'; cartTotalEl.textContent = formatN(0); return; }
+  if(ids.length === 0){ 
+    cartListEl.innerHTML = '<div class="center small muted">Cart is empty</div>'; 
+    cartTotalEl.textContent = formatN(0); 
+    return; 
+  }
+  
   ids.forEach(id=>{
     const qty = cart[id];
     const p = state.products.find(x=>x.id===id);
+    if (!p) return; // Skip if product not found
+    
     const div = document.createElement('div'); div.className='cart-item';
-    div.innerHTML = `<div style="flex:1"><div style="font-weight:800">${p.title}</div><div class="small muted">${qty} x ${formatN(p.price)}</div></div><div style="text-align:right"><div style="font-weight:900">${formatN(p.price*qty)}</div><div style="margin-top:6px"><button class="nav-btn" data-id="${p.id}" data-action="dec">-</button></div></div>`;
+    div.innerHTML = `
+      <div style="flex:1">
+        <div style="font-weight:800">${p.title}</div>
+        <div class="small muted">${qty} x ${formatN(p.price)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:900">${formatN(p.price*qty)}</div>
+        <div style="margin-top:6px">
+          <button class="nav-btn" data-id="${p.id}" data-action="dec">-</button>
+          <span style="margin:0 8px">${qty}</span>
+          <button class="nav-btn" data-id="${p.id}" data-action="inc">+</button>
+        </div>
+      </div>
+    `;
     cartListEl.appendChild(div);
   });
   cartTotalEl.textContent = formatN(getCartTotal());
 }
 
-function getCartTotal(){ return Object.keys(cart).reduce((s,id)=>{ const p=state.products.find(x=>x.id===id); return s + (p? p.price*cart[id] : 0) },0) }
+function getCartTotal(){ 
+  return Object.keys(cart).reduce((s,id)=>{ 
+    const p = state.products.find(x=>x.id===id); 
+    return s + (p ? p.price*cart[id] : 0) 
+  }, 0); 
+}
 
 function renderUser(){
   if(currentUser){
@@ -750,13 +823,35 @@ document.addEventListener('click', (e)=>{
   // product add
   const addBtn = e.target.closest('button[data-action="add"]');
   if(addBtn){
-    const id = addBtn.getAttribute('data-id'); if(id){ cart[id] = (cart[id]||0)+1; renderCart(); updateProgressBar(); }
+    const id = addBtn.getAttribute('data-id'); 
+    if(id){ 
+      cart[id] = (cart[id]||0)+1; 
+      renderCart(); 
+      updateProgressBar(); 
+    }
   }
 
   // cart decrement
   const decBtn = e.target.closest('button[data-action="dec"]');
   if(decBtn){
-    const id = decBtn.getAttribute('data-id'); if(id && cart[id]){ cart[id]--; if(cart[id]<=0) delete cart[id]; renderCart(); updateProgressBar(); }
+    const id = decBtn.getAttribute('data-id'); 
+    if(id && cart[id]){ 
+      cart[id]--; 
+      if(cart[id]<=0) delete cart[id]; 
+      renderCart(); 
+      updateProgressBar(); 
+    }
+  }
+  
+  // cart increment
+  const incBtn = e.target.closest('button[data-action="inc"]');
+  if(incBtn){
+    const id = incBtn.getAttribute('data-id'); 
+    if(id){ 
+      cart[id] = (cart[id]||0)+1; 
+      renderCart(); 
+      updateProgressBar(); 
+    }
   }
 });
 
@@ -780,6 +875,8 @@ function checkout(){
   const items = [];
   Object.keys(cart).forEach(id=>{
     const product = state.products.find(p=>p.id===id);
+    if (!product) return; // Skip if product not found
+    
     for(let i=0;i<cart[id];i++){
       const rec = {
         id:product.id,
@@ -807,18 +904,17 @@ function checkout(){
 // --- Quiz ---
 function openQuizModal(){
   if(!currentUser){ alert('Please login to take quiz'); openModal('modalLogin'); return; }
-  if(!eligibleForQuiz(currentUser.acct)){ 
+  
+  // Check eligibility only for Saturday main quiz
+  const today = new Date();
+  if (today.getDay() === 6 && !eligibleForQuiz(currentUser.acct)){ 
     const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
-    alert(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify.`); 
+    alert(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify for the Saturday main quiz.`); 
     return; 
   }
   
-  const today = new Date();
-  if(today.getDay() !== 6){
-    if(!confirm('Quiz is scheduled for Saturdays. Open now for testing?')) return;
-  }
-  
-  buildQuizUI(); openModal('modalQuiz');
+  buildQuizUI(); 
+  openModal('modalQuiz');
 }
 
 function eligibleForQuiz(acct){ 
@@ -827,19 +923,40 @@ function eligibleForQuiz(acct){
 }
 
 function buildQuizUI(){
-  const area = document.getElementById('quizArea'); area.innerHTML = '';
-  quizState.answers = []; quizState.running=false; document.getElementById('quizTimer').textContent='00:00';
-  state.quizQuestions.forEach((q,idx)=>{
-    const block = document.createElement('div'); block.className='quiz-question';
+  const area = document.getElementById('quizArea'); 
+  area.innerHTML = '';
+  
+  const quizSettings = getQuizSettings();
+  quizState.currentQuestions = getRandomQuestions(quizSettings.questions);
+  quizState.answers = []; 
+  quizState.running=false; 
+  document.getElementById('quizTimer').textContent='00:00';
+  
+  // Update modal title with quiz type
+  document.querySelector('#modalQuiz .panel h3').textContent = `${quizSettings.name} - Nutrition Quiz`;
+  
+  quizState.currentQuestions.forEach((q,idx)=>{
+    const block = document.createElement('div'); 
+    block.className='quiz-question';
     block.innerHTML = `<div style="font-weight:800">Q${idx+1}. ${q.q}</div><div style="margin-top:8px" data-q="${idx}"></div>`;
     const opts = block.querySelector('[data-q]');
-    q.choices.forEach((c,ci)=>{
-      const opt = document.createElement('div'); opt.className='quiz-option'; opt.textContent = c; opt.dataset.choice = ci; opt.dataset.qidx = idx;
+    
+    // Randomize answer choices
+    const choicesWithIndex = q.choices.map((choice, index) => ({ choice, index }));
+    const shuffledChoices = choicesWithIndex.sort(() => 0.5 - Math.random());
+    
+    shuffledChoices.forEach(({choice, index})=>{
+      const opt = document.createElement('div'); 
+      opt.className='quiz-option'; 
+      opt.textContent = choice; 
+      opt.dataset.choice = index; 
+      opt.dataset.qidx = idx;
       opt.addEventListener('click', function(){
         if(!quizState.running) return;
         const qid = this.dataset.qidx;
         document.querySelectorAll(`.quiz-option[data-qidx="${qid}"]`).forEach(o=>o.classList.remove('selected'));
-        this.classList.add('selected'); quizState.answers[qid] = Number(this.dataset.choice);
+        this.classList.add('selected'); 
+        quizState.answers[qid] = Number(this.dataset.choice);
       });
       opts.appendChild(opt);
     });
@@ -849,23 +966,68 @@ function buildQuizUI(){
 
 function startQuiz(){
   if(quizState.running) return;
-  quizState.running = true; quizState.timeLeft = state.quizQuestions.length * 20; quizState.startedAt = new Date().toISOString();
-  tickTimer(); quizState.timer = setInterval(()=>{ quizState.timeLeft--; if(quizState.timeLeft<=0) finishQuiz(); else tickTimer(); },1000);
-  const btn = document.getElementById('startQuiz'); if(btn){ btn.disabled=true; btn.textContent='Quiz Running...' }
+  
+  const quizSettings = getQuizSettings();
+  quizState.running = true; 
+  quizState.timeLeft = quizSettings.questions * quizSettings.timePerQuestion; 
+  quizState.startedAt = new Date().toISOString();
+  
+  tickTimer(); 
+  quizState.timer = setInterval(()=>{ 
+    quizState.timeLeft--; 
+    if(quizState.timeLeft<=0) finishQuiz(); 
+    else tickTimer(); 
+  }, 1000);
+  
+  const btn = document.getElementById('startQuiz'); 
+  if(btn){ 
+    btn.disabled=true; 
+    btn.textContent='Quiz Running...' 
+  }
 }
 
-function tickTimer(){ const tm = quizState.timeLeft; const m = Math.floor(tm/60); const s = tm%60; const el = document.getElementById('quizTimer'); if(el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(tm<30 && el) el.style.color = 'var(--warning)'; }
+function tickTimer(){ 
+  const tm = quizState.timeLeft; 
+  const m = Math.floor(tm/60); 
+  const s = tm%60; 
+  const el = document.getElementById('quizTimer'); 
+  if(el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; 
+  if(tm<30 && el) el.style.color = 'var(--warning)'; 
+}
 
 function finishQuiz(){
-  if(quizState.timer){ clearInterval(quizState.timer); quizState.timer=null }
+  if(quizState.timer){ 
+    clearInterval(quizState.timer); 
+    quizState.timer=null 
+  }
   quizState.running=false;
+  
   let score=0;
-  state.quizQuestions.forEach((q,idx)=>{ if(quizState.answers[idx] !== undefined && quizState.answers[idx] === q.answer) score++ });
-  const rec = { week:getWeekKey(), account:currentUser.acct, score, time:(new Date()-new Date(quizState.startedAt)), date:nowISO() };
-  state.leaderboard.push(rec); saveState(state);
-  alert(`Quiz finished — Score: ${score}/${state.quizQuestions.length}`);
+  quizState.currentQuestions.forEach((q,idx)=>{
+    if(quizState.answers[idx] !== undefined && quizState.answers[idx] === q.answer) score++
+  });
+  
+  const rec = { 
+    week:getWeekKey(), 
+    account:currentUser.acct, 
+    score, 
+    total: quizState.currentQuestions.length,
+    time:(new Date()-new Date(quizState.startedAt)), 
+    date:nowISO(),
+    quizType: getQuizSettings().name
+  };
+  
+  state.leaderboard.push(rec); 
+  saveState(state);
+  
+  alert(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}`);
   closeModal('modalQuiz');
-  const btn=document.getElementById('startQuiz'); if(btn){ btn.disabled=false; btn.textContent='Start Quiz' }
+  
+  const btn=document.getElementById('startQuiz'); 
+  if(btn){ 
+    btn.disabled=false; 
+    btn.textContent='Start Quiz' 
+  }
 }
 
 // --- Leaderboard & Reviews ---
@@ -896,13 +1058,13 @@ function showLeaderboard(){
       .sort((a, b) => b.score - a.score || a.time - b.time);
     
     html += `<h4>Week ${currentWeek}</h4>`;
-    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
     
     if (rows.length === 0) {
-      html += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+      html += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
     } else {
       rows.forEach((r, i) => {
-        html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+        html += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
       });
     }
     html += '</tbody></table>';
@@ -921,13 +1083,13 @@ function showLeaderboard(){
         .sort((a, b) => b.score - a.score || a.time - b.time);
       
       let tableHtml = `<h4>Week ${week}</h4>`;
-      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
       
       if (rows.length === 0) {
-        tableHtml += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+        tableHtml += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
       } else {
         rows.forEach((r, i) => {
-          tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+          tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
         });
       }
       tableHtml += '</tbody></table>';
@@ -945,13 +1107,13 @@ function showLeaderboard(){
             .sort((a, b) => b.score - a.score || a.time - b.time);
           
           let tableHtml = `<h4>Week ${week}</h4>`;
-          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th></tr></thead><tbody>';
+          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Type</th></tr></thead><tbody>';
           
           if (rows.length === 0) {
-            tableHtml += `<tr><td colspan="4" class="center small muted">No entries this week</td></tr>`;
+            tableHtml += `<tr><td colspan="5" class="center small muted">No entries this week</td></tr>`;
           } else {
             rows.forEach((r, i) => {
-              tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${state.quizQuestions.length}</td><td>${Math.round(r.time/1000)}</td></tr>`;
+              tableHtml += `<tr><td>${i+1}</td><td>${r.account}</td><td>${r.score}/${r.total}</td><td>${Math.round(r.time/1000)}</td><td>${r.quizType || 'Main'}</td></tr>`;
             });
           }
           tableHtml += '</tbody></table>';
@@ -999,6 +1161,7 @@ function adminUnlock(){
     document.getElementById('sellerPhone').value = state.config.sellerPhone;
     document.getElementById('prizeMin').value = state.config.prizeMin;
     document.getElementById('prizeMax').value = state.config.prizeMax;
+    document.getElementById('newQuestions').value = JSON.stringify(state.quizQuestions, null, 2);
     renderPayoutsAdmin(); alert('Admin unlocked');
   } else alert('Wrong password');
 }
@@ -1053,7 +1216,8 @@ function renderPayoutsAdmin(){
 }
 
 function awardTopThisWeek(){
-  const wk = getWeekKey(); const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> b.score - a.score || a.time - b.time);
+  const wk = getWeekKey(); 
+  const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> b.score - a.score || a.time - b.time);
   if(entries.length===0){ alert('No entries this week'); return; }
   const top = entries[0];
   const amount = Math.floor(Math.random() * (state.config.prizeMax - state.config.prizeMin + 1)) + state.config.prizeMin;
@@ -1066,6 +1230,7 @@ function awardTopThisWeek(){
 // --- Utility UI wiring & init ---
 function updateSellerPhone(){ sellerPhoneDisplay.textContent = state.config.sellerPhone || '+234...'; }
 
+// Initialize event listeners
 document.getElementById('loginBtn').addEventListener('click', ()=>openModal('modalLogin'));
 document.getElementById('doLogin').addEventListener('click', handleLogin);
 document.getElementById('checkoutBtn').addEventListener('click', checkout);

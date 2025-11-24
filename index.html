@@ -9,24 +9,30 @@
     :root{
       --bg1:#071024; --bg2:#11263f; --card:#0b1220; --accent:#ff7b54; --accent-2:#ff5722;
       --muted:#9aa4b2; --light:#e6eef6; --glass: rgba(255,255,255,0.03); --success:#4caf50;
-      --warning:#ff9800; --shadow: 0 8px 30px rgba(2,6,23,0.6); --radius:14px;
+      --warning:#ff9800; --error:#f44336; --shadow: 0 8px 30px rgba(2,6,23,0.6); --radius:14px;
+      --affiliate: #9c27b0;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); -webkit-font-smoothing:antialiased}
+    html,body{height:100%; margin:0; font-family:'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); -webkit-font-smoothing:antialiased; line-height:1.5}
     .container{max-width:1150px;margin:0 auto;padding:20px}
     header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 10px}
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061122}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061122;font-size:20px}
     h1{font-size:18px;margin:0}
     nav{display:flex;gap:10px;align-items:center}
-    .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600}
+    .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600;transition: all 0.2s ease}
+    .nav-btn:hover{background:rgba(255,255,255,0.05)}
     .nav-btn.primary{background:var(--accent);color:#061122;border:none}
+    .nav-btn.primary:hover{background:var(--accent-2)}
+    .nav-btn.affiliate{background:var(--affiliate);color:#fff;border:none}
+    .nav-btn.affiliate:hover{background:#8e24aa}
     main{padding:22px 0}
     .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
     @media(max-width:980px){ .grid{grid-template-columns:1fr} .sidebar{position:static} }
     .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
-    .card h2{margin:0 0 8px}
+    .card h2{margin:0 0 8px;font-weight:700}
+    .card h3{margin:0 0 10px;font-weight:600}
     .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
     .product{
       background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
@@ -48,24 +54,30 @@
     .desc{color:var(--muted);font-size:13px;margin-top:2px}
     .product .footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
     .price{font-weight:900;color:var(--accent); font-size:16px}
-    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#061122;font-weight:800;cursor:pointer}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#061122;font-weight:800;cursor:pointer;transition: all 0.2s ease}
+    .btn:hover{background:var(--accent-2);transform: translateY(-2px)}
     .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .btn.ghost:hover{background:rgba(255,255,255,0.05);transform: translateY(-2px)}
+    .btn.affiliate{background:var(--affiliate);color:#fff}
+    .btn.affiliate:hover{background:#8e24aa}
     .sidebar{position:sticky;top:90px}
     .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
     .muted{color:var(--muted)}
     .center{text-align:center}
     .progress{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden}
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition: width 0.5s ease}
     footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03)}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px;backdrop-filter:blur(4px)}
     .modal.active{display:flex}
     .modal .panel{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);max-height:90vh;overflow:auto}
     .flex{display:flex;gap:10px}
     .flex-between{display:flex;justify-content:space-between;align-items:center}
     .small{font-size:13px;color:var(--muted)}
-    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%;transition: all 0.2s ease}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,123,84,0.2)}
     .quiz-question{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px}
-    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px}
+    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px;transition: all 0.2s ease}
+    .quiz-option:hover{background:rgba(255,255,255,0.05)}
     .quiz-option.selected{background:rgba(255,123,84,0.18);border:1px solid var(--accent)}
     table{width:100%;border-collapse:collapse}
     table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
@@ -116,6 +128,53 @@
       color: var(--muted);
       text-transform: uppercase;
     }
+    
+    /* Affiliate Section */
+    .affiliate-card {
+      border-left: 4px solid var(--affiliate);
+    }
+    .affiliate-badge {
+      background: var(--affiliate);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .referral-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .status-pending { color: var(--warning) }
+    .status-confirmed { color: var(--success) }
+    .status-paid { color: var(--affiliate) }
+    
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateX(150%);
+      transition: transform 0.3s ease;
+    }
+    .notification.show {
+      transform: translateX(0);
+    }
+    .notification.success { border-left: 4px solid var(--success) }
+    .notification.error { border-left: 4px solid var(--error) }
+    .notification.warning { border-left: 4px solid var(--warning) }
     
     /* Mobile Responsive Styles */
     @media (max-width: 768px) {
@@ -212,6 +271,12 @@
       .countdown-value {
         font-size: 16px;
       }
+      
+      .notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+      }
     }
     
     @media (max-width: 480px) {
@@ -269,6 +334,11 @@
   </style>
 </head>
 <body>
+  <div id="notification" class="notification">
+    <i class="fas fa-info-circle"></i>
+    <span id="notificationText">Notification message</span>
+  </div>
+
   <header>
     <div class="container">
       <div class="header-row">
@@ -287,6 +357,7 @@
           <button id="openAdmin" class="nav-btn"><i class="fas fa-cog"></i>&nbsp;Admin</button>
           <button id="viewLeaderboard" class="nav-btn"><i class="fas fa-trophy"></i>&nbsp;Leaderboard</button>
           <button id="viewReviews" class="nav-btn"><i class="fas fa-comments"></i>&nbsp;Reviews</button>
+          <button id="openAffiliate" class="nav-btn affiliate"><i class="fas fa-users"></i>&nbsp;Affiliate</button>
         </nav>
       </div>
     </div>
@@ -384,8 +455,27 @@
               <div class="flex-between" style="margin-top:6px"><span>Sandwiches this week:</span><span id="sandwichesCount">0</span></div>
               <div class="flex-between" style="margin-top:6px"><span>Smoothies this week:</span><span id="smoothiesCount">0</span></div>
               <div class="flex-between" style="margin-top:6px"><span>Balance:</span><span>₦<span id="balance">0</span></span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Affiliate Earnings:</span><span>₦<span id="affiliateBalance">0</span></span></div>
             </div>
             <div style="margin-top:12px"><button id="viewHistory" class="nav-btn" style="width:100%"> <i class="fas fa-history"></i>&nbsp;Purchase History</button></div>
+          </div>
+
+          <div class="card affiliate-card" style="margin-top:12px">
+            <h3><i class="fas fa-users"></i> Affiliate Program</h3>
+            <div class="small muted">Earn ₦500 for each referral who buys and reviews</div>
+            <div style="margin-top:10px">
+              <div class="flex-between">
+                <span class="small">Your Referrals:</span>
+                <span id="referralCount" class="small">0</span>
+              </div>
+              <div class="flex-between" style="margin-top:4px">
+                <span class="small">Confirmed Referrals:</span>
+                <span id="confirmedReferrals" class="small">0</span>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <button id="addReferralBtn" class="btn affiliate" style="width:100%"><i class="fas fa-plus-circle"></i>&nbsp;Add Referral</button>
+            </div>
           </div>
 
           <div class="card" style="margin-top:12px">
@@ -403,7 +493,8 @@
   <!-- Modals -->
   <div id="modalLogin" class="modal"><div class="panel">
     <div class="flex-between"><h3>Login — OPAY Account</h3><button class="nav-btn" data-modal="modalLogin" aria-label="close">&times;</button></div>
-    <div style="margin-top:12px"><input id="inputAcct" placeholder="Enter OPAY account (e.g. OPAY12345)"></div>
+    <div style="margin-top:12px"><input id="inputAcct" placeholder="Enter OPAY account (10-11 digits only)" type="tel" maxlength="11"></div>
+    <div class="small muted" style="margin-top:4px">Must be 10-11 digits only, no letters or special characters</div>
     <div style="margin-top:10px" class="flex"><button id="doLogin" class="btn">Login</button><button class="nav-btn" data-modal="modalLogin">Cancel</button></div>
   </div></div>
 
@@ -443,6 +534,12 @@
       <div id="payoutsAdmin" style="margin-top:8px"></div>
 
       <div style="margin-top:12px"><button id="awardTop" class="btn">Auto-Award This Week Top</button></div>
+      
+      <h4 style="margin-top:12px">Affiliate Management</h4>
+      <div id="affiliateAdmin" style="margin-top:8px"></div>
+      <div style="margin-top:8px" class="flex">
+        <button id="processAffiliatePayouts" class="btn affiliate">Process Affiliate Payouts</button>
+      </div>
     </div>
   </div></div>
 
@@ -451,14 +548,46 @@
     <div id="reviewsArea" style="margin-top:12px"></div>
   </div></div>
 
+  <div id="modalAffiliate" class="modal"><div class="panel">
+    <div class="flex-between"><h3><i class="fas fa-users"></i> Affiliate Program</h3><button class="nav-btn" data-modal="modalAffiliate">&times;</button></div>
+    
+    <div class="card affiliate-card" style="margin-top:12px">
+      <h4>How It Works</h4>
+      <div class="small muted">
+        <p>1. Refer friends by entering their OPAY account number</p>
+        <p>2. When your referral makes a purchase and leaves a review</p>
+        <p>3. You earn ₦500 for each confirmed referral</p>
+        <p>4. Earnings are paid directly to your OPAY account</p>
+      </div>
+    </div>
+    
+    <div style="margin-top:12px">
+      <h4>Add New Referral</h4>
+      <div style="margin-top:8px">
+        <input id="referralPhoneInput" placeholder="Referral's OPAY account (10-11 digits)" type="tel" maxlength="11">
+        <div class="small muted" style="margin-top:4px">Must be 10-11 digits only, no letters or special characters</div>
+      </div>
+      <div style="margin-top:10px">
+        <button id="submitReferral" class="btn affiliate">Submit Referral</button>
+      </div>
+    </div>
+    
+    <div style="margin-top:16px">
+      <h4>Your Referrals</h4>
+      <div id="referralsList" style="max-height:300px;overflow:auto;margin-top:8px">
+        <div class="center small muted">No referrals yet</div>
+      </div>
+    </div>
+  </div></div>
+
 <script>
 /* =========================
    CO-YUM single-file app
    HTML/CSS/JS only — uses localStorage
-   Updated with enhanced quiz system and persistent storage
+   Updated with enhanced UI and affiliate system
    ========================= */
 
-const STORE_KEY = 'coyum_v9'; // new key for enhanced storage features
+const STORE_KEY = 'coyum_v10'; // new key for affiliate system
 const DEFAULT = {
   products: [
     {
@@ -484,7 +613,8 @@ const DEFAULT = {
   leaderboard:[],
   reviews:[],
   payouts:[],
-  config:{ sellerPhone:'+2348103606602', prizeMin:5000, prizeMax:10000, adminPass:'admin123' },
+  referrals: [],
+  config:{ sellerPhone:'+2348103606602', prizeMin:5000, prizeMax:10000, adminPass:'admin123', affiliateBonus: 500 },
   quizQuestions:[
     {q:'Which food group is a primary source of dietary fibre?', choices:['Fruits & vegetables','Oils','Sweets','Soda'], answer:0},
     {q:'Which vitamin is abundant in citrus fruits?', choices:['Vitamin A','Vitamin C','Vitamin K','Vitamin D'], answer:1},
@@ -703,12 +833,28 @@ const acctNumberEl = document.getElementById('acctNumber');
 const sandwichesCountEl = document.getElementById('sandwichesCount');
 const smoothiesCountEl = document.getElementById('smoothiesCount');
 const balanceEl = document.getElementById('balance');
+const affiliateBalanceEl = document.getElementById('affiliateBalance');
 const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
 const proofListEl = document.getElementById('proofList');
+const referralCountEl = document.getElementById('referralCount');
+const confirmedReferralsEl = document.getElementById('confirmedReferrals');
 
 // defensive find (some elements may not exist in edge cases)
 function $(id){ return document.getElementById(id) }
+
+// --- Notification System ---
+function showNotification(message, type = 'success', duration = 5000) {
+  const notification = $('#notification');
+  const notificationText = $('#notificationText');
+  
+  notificationText.textContent = message;
+  notification.className = `notification ${type} show`;
+  
+  setTimeout(() => {
+    notification.classList.remove('show');
+  }, duration);
+}
 
 // --- Enhanced Render Functions ---
 function renderProducts(){
@@ -785,15 +931,32 @@ function renderUser(){
     sandwichesCountEl.textContent = sandwiches;
     smoothiesCountEl.textContent = smoothies;
     
-    balanceEl.textContent = currentUser.balance;
+    balanceEl.textContent = currentUser.balance || 0;
+    affiliateBalanceEl.textContent = currentUser.affiliateBalance || 0;
+    
+    // Update affiliate stats
+    updateAffiliateStats();
   } else {
     welcomeEl.textContent = 'Not logged in';
     acctNumberEl.textContent = '—';
     sandwichesCountEl.textContent = '0';
     smoothiesCountEl.textContent = '0';
     balanceEl.textContent = '0';
+    affiliateBalanceEl.textContent = '0';
+    referralCountEl.textContent = '0';
+    confirmedReferralsEl.textContent = '0';
   }
   updateProgressBar();
+}
+
+function updateAffiliateStats() {
+  if (!currentUser) return;
+  
+  const userReferrals = state.referrals.filter(r => r.affiliate === currentUser.acct);
+  const confirmedCount = userReferrals.filter(r => r.status === 'confirmed').length;
+  
+  referralCountEl.textContent = userReferrals.length;
+  confirmedReferralsEl.textContent = confirmedCount;
 }
 
 function purchasesThisWeek(acct){
@@ -892,19 +1055,46 @@ document.addEventListener('click', (e)=>{
 
 // --- Enhanced Product interactions ---
 function handleLogin(){
-  const v = (document.getElementById('inputAcct')||{value:''}).value.trim();
-  if(!v){ alert('Enter OPAY account number'); return; }
-  if(!state.users[v]) state.users[v] = {acct:v,purchases:[],balance:0,reviews:[]};
+  const inputEl = document.getElementById('inputAcct');
+  const v = inputEl.value.trim();
+  
+  // Validate OPAY account - must be 10 or 11 digits only
+  if(!v){ 
+    showNotification('Enter OPAY account number', 'error');
+    return; 
+  }
+  
+  // Check if it's only digits and length is 10 or 11
+  if(!/^\d{10,11}$/.test(v)){ 
+    showNotification('OPAY account must be 10-11 digits only, no letters or special characters', 'error');
+    inputEl.focus();
+    return; 
+  }
+  
+  if(!state.users[v]) state.users[v] = {
+    acct:v,
+    purchases:[],
+    balance:0,
+    affiliateBalance: 0,
+    reviews:[]
+  };
   currentUser = state.users[v];
   saveState(state);
   renderUser();
   closeModal('modalLogin');
-  alert('Logged in as ' + v);
+  showNotification('Logged in successfully as ' + v);
 }
 
 function checkout(){
-  if(!currentUser){ alert('Please login before checkout'); openModal('modalLogin'); return; }
-  if(Object.keys(cart).length===0){ alert('Cart is empty'); return; }
+  if(!currentUser){ 
+    showNotification('Please login before checkout', 'error');
+    openModal('modalLogin'); 
+    return; 
+  }
+  if(Object.keys(cart).length===0){ 
+    showNotification('Cart is empty', 'error');
+    return; 
+  }
 
   const wk = getWeekKey();
   const items = [];
@@ -933,18 +1123,22 @@ function checkout(){
   const wa = `https://wa.me/${phone}?text=${message}`;
   window.open(wa,'_blank');
   cart = {}; renderCart(); renderUser(); renderProofList();
-  alert('Order sent to WhatsApp. Keep proof to claim quiz eligibility.');
+  showNotification('Order sent to WhatsApp. Keep proof to claim quiz eligibility.');
 }
 
 // --- Enhanced Quiz System with Exact Completion Time ---
 function openQuizModal(){
-  if(!currentUser){ alert('Please login to take quiz'); openModal('modalLogin'); return; }
+  if(!currentUser){ 
+    showNotification('Please login to take quiz', 'error');
+    openModal('modalLogin'); 
+    return; 
+  }
   
   // Check eligibility only for Saturday main quiz
   const today = new Date();
   if (today.getDay() === 6 && !eligibleForQuiz(currentUser.acct)){ 
     const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
-    alert(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify for the Saturday main quiz.`); 
+    showNotification(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify for the Saturday main quiz.`, 'error'); 
     return; 
   }
   
@@ -1068,9 +1262,9 @@ function finishQuiz(){
   if (validateQuizRecord(rec)) {
     state.leaderboard.push(rec); 
     saveState(state);
-    alert(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}\nTime: ${timeTaken} seconds`);
+    showNotification(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}\nTime: ${timeTaken} seconds`);
   } else {
-    alert('Error: Quiz data could not be saved properly.');
+    showNotification('Error: Quiz data could not be saved properly.', 'error');
   }
   
   closeModal('modalQuiz');
@@ -1079,6 +1273,149 @@ function finishQuiz(){
   if(btn){ 
     btn.disabled=false; 
     btn.textContent='Start Quiz' 
+  }
+}
+
+// --- Affiliate System ---
+function openAffiliateModal() {
+  if (!currentUser) {
+    showNotification('Please login to access affiliate features', 'error');
+    openModal('modalLogin');
+    return;
+  }
+  
+  renderReferralsList();
+  openModal('modalAffiliate');
+}
+
+function addReferral() {
+  if (!currentUser) {
+    showNotification('Please login to add referrals', 'error');
+    openModal('modalLogin');
+    return;
+  }
+  
+  const referralPhoneInput = document.getElementById('referralPhoneInput');
+  const referralPhone = referralPhoneInput.value.trim();
+  
+  // Validate phone number
+  if (!referralPhone) {
+    showNotification('Please enter a referral phone number', 'error');
+    return;
+  }
+  
+  if (!/^\d{10,11}$/.test(referralPhone)) {
+    showNotification('Referral phone must be 10-11 digits only, no letters or special characters', 'error');
+    referralPhoneInput.focus();
+    return;
+  }
+  
+  // Check if referral is the user themselves
+  if (referralPhone === currentUser.acct) {
+    showNotification('You cannot refer yourself', 'error');
+    return;
+  }
+  
+  // Check if referral already exists
+  const existingReferral = state.referrals.find(r => 
+    r.affiliate === currentUser.acct && r.referredPhone === referralPhone
+  );
+  
+  if (existingReferral) {
+    showNotification('You have already referred this phone number', 'error');
+    return;
+  }
+  
+  // Create new referral
+  const referral = {
+    id: uid(),
+    affiliate: currentUser.acct,
+    referredPhone: referralPhone,
+    status: 'pending',
+    date: nowISO(),
+    confirmedDate: null,
+    paidDate: null
+  };
+  
+  state.referrals.push(referral);
+  saveState(state);
+  
+  showNotification('Referral added successfully! You will earn ₦500 when they make a purchase and review.');
+  referralPhoneInput.value = '';
+  renderReferralsList();
+  updateAffiliateStats();
+}
+
+function renderReferralsList() {
+  const referralsListEl = document.getElementById('referralsList');
+  
+  if (!currentUser) {
+    referralsListEl.innerHTML = '<div class="center small muted">Please login to view referrals</div>';
+    return;
+  }
+  
+  const userReferrals = state.referrals.filter(r => r.affiliate === currentUser.acct);
+  
+  if (userReferrals.length === 0) {
+    referralsListEl.innerHTML = '<div class="center small muted">No referrals yet</div>';
+    return;
+  }
+  
+  referralsListEl.innerHTML = '';
+  
+  userReferrals.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(ref => {
+    const div = document.createElement('div');
+    div.className = 'referral-item';
+    
+    let statusClass = 'status-pending';
+    let statusText = 'Pending';
+    
+    if (ref.status === 'confirmed') {
+      statusClass = 'status-confirmed';
+      statusText = 'Confirmed';
+    } else if (ref.status === 'paid') {
+      statusClass = 'status-paid';
+      statusText = 'Paid';
+    }
+    
+    div.innerHTML = `
+      <div>
+        <div style="font-weight:600">${ref.referredPhone}</div>
+        <div class="small muted">${new Date(ref.date).toLocaleDateString()}</div>
+      </div>
+      <div class="${statusClass}" style="font-weight:600">${statusText}</div>
+    `;
+    
+    referralsListEl.appendChild(div);
+  });
+}
+
+// Check for referral confirmations when a review is added
+function checkReferralConfirmations(reviewAccount) {
+  const pendingReferrals = state.referrals.filter(r => 
+    r.referredPhone === reviewAccount && r.status === 'pending'
+  );
+  
+  if (pendingReferrals.length > 0) {
+    pendingReferrals.forEach(ref => {
+      ref.status = 'confirmed';
+      ref.confirmedDate = nowISO();
+      
+      // Add affiliate bonus to the referrer
+      if (state.users[ref.affiliate]) {
+        state.users[ref.affiliate].affiliateBalance = 
+          (state.users[ref.affiliate].affiliateBalance || 0) + state.config.affiliateBonus;
+      }
+    });
+    
+    saveState(state);
+    
+    // Update UI if the referrer is currently logged in
+    if (currentUser && pendingReferrals.some(ref => ref.affiliate === currentUser.acct)) {
+      renderUser();
+    }
+    
+    showNotification(`${pendingReferrals.length} referral(s) confirmed! Affiliate bonuses added.`);
   }
 }
 
@@ -1250,7 +1587,12 @@ function showReviews(){
 }
 
 function addReview(){
-  if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
+  if(!currentUser){ 
+    showNotification('Login first', 'error');
+    openModal('modalLogin'); 
+    return; 
+  }
+  
   const text = prompt('Write your review (short):'); 
   if(!text) return;
   
@@ -1275,10 +1617,14 @@ function addReview(){
   if (validateReviewRecord(review)) {
     state.reviews.push(review); 
     saveState(state); 
-    alert('Thanks for your review!'); 
+    
+    // Check if this review confirms any referrals
+    checkReferralConfirmations(currentUser.acct);
+    
+    showNotification('Thanks for your review!'); 
     renderProofList();
   } else {
-    alert('Error: Review could not be saved properly.');
+    showNotification('Error: Review could not be saved properly.', 'error');
   }
 }
 
@@ -1291,8 +1637,10 @@ function adminUnlock(){
     document.getElementById('prizeMin').value = state.config.prizeMin;
     document.getElementById('prizeMax').value = state.config.prizeMax;
     document.getElementById('newQuestions').value = JSON.stringify(state.quizQuestions, null, 2);
-    renderPayoutsAdmin(); alert('Admin unlocked');
-  } else alert('Wrong password');
+    renderPayoutsAdmin(); 
+    renderAffiliateAdmin();
+    showNotification('Admin unlocked');
+  } else showNotification('Wrong password', 'error');
 }
 
 function adminSaveConfig(){
@@ -1301,22 +1649,22 @@ function adminSaveConfig(){
   const pmax = Number((document.getElementById('prizeMax')||{value:''}).value) || state.config.prizeMax;
   if(phone) state.config.sellerPhone = phone;
   state.config.prizeMin = pmin; state.config.prizeMax = pmax;
-  saveState(state); updateSellerPhone(); alert('Config saved');
+  saveState(state); updateSellerPhone(); showNotification('Config saved');
 }
 
 function adminSaveQuestions(){
   try{
     const txt = (document.getElementById('newQuestions')||{value:''}).value.trim();
-    if(!txt){ alert('Paste JSON first'); return; }
+    if(!txt){ showNotification('Paste JSON first', 'error'); return; }
     const arr = JSON.parse(txt);
-    if(!Array.isArray(arr)){ alert('Questions JSON must be an array'); return; }
-    state.quizQuestions = arr; saveState(state); alert('Questions saved');
-  } catch(e){ alert('Invalid JSON: ' + e.message) }
+    if(!Array.isArray(arr)){ showNotification('Questions JSON must be an array', 'error'); return; }
+    state.quizQuestions = arr; saveState(state); showNotification('Questions saved');
+  } catch(e){ showNotification('Invalid JSON: ' + e.message, 'error') }
 }
 
 function adminReset(){
   if(!confirm('Reset leaderboard & payouts?')) return;
-  state.leaderboard = []; state.payouts = []; saveState(state); renderPayoutsAdmin(); renderProofList(); alert('Reset done');
+  state.leaderboard = []; state.payouts = []; saveState(state); renderPayoutsAdmin(); renderProofList(); showNotification('Reset done');
 }
 
 function exportData(){ 
@@ -1331,7 +1679,7 @@ function exportData(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  alert('Data exported as JSON file');
+  showNotification('Data exported as JSON file');
 }
 
 function renderPayoutsAdmin(){
@@ -1344,19 +1692,96 @@ function renderPayoutsAdmin(){
   });
 }
 
+function renderAffiliateAdmin() {
+  const el = document.getElementById('affiliateAdmin'); 
+  el.innerHTML = '';
+  
+  if(state.referrals.length === 0) {
+    el.innerHTML = '<div class="small muted">No affiliate referrals</div>';
+    return;
+  }
+  
+  // Group by status
+  const pending = state.referrals.filter(r => r.status === 'pending');
+  const confirmed = state.referrals.filter(r => r.status === 'confirmed');
+  const paid = state.referrals.filter(r => r.status === 'paid');
+  
+  let html = `
+    <div class="flex-between small" style="margin-bottom:8px">
+      <span>Pending: ${pending.length}</span>
+      <span>Confirmed: ${confirmed.length}</span>
+      <span>Paid: ${paid.length}</span>
+    </div>
+  `;
+  
+  // Show confirmed referrals that need payment
+  if (confirmed.length > 0) {
+    html += '<div class="small" style="margin-top:8px;margin-bottom:4px"><strong>Confirmed Referrals (Need Payment):</strong></div>';
+    
+    confirmed.forEach(ref => {
+      html += `
+        <div class="card" style="margin-bottom:6px;padding:8px">
+          <div class="flex-between">
+            <div>
+              <div><strong>Referrer:</strong> ${ref.affiliate}</div>
+              <div><strong>Referred:</strong> ${ref.referredPhone}</div>
+              <div class="small muted">Confirmed: ${new Date(ref.confirmedDate).toLocaleDateString()}</div>
+            </div>
+            <div style="font-weight:900">₦${state.config.affiliateBonus}</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  el.innerHTML = html;
+}
+
+function processAffiliatePayouts() {
+  const confirmedReferrals = state.referrals.filter(r => r.status === 'confirmed');
+  
+  if (confirmedReferrals.length === 0) {
+    showNotification('No confirmed referrals to pay out', 'warning');
+    return;
+  }
+  
+  if (!confirm(`Process payouts for ${confirmedReferrals.length} confirmed referrals? Total: ₦${confirmedReferrals.length * state.config.affiliateBonus}`)) {
+    return;
+  }
+  
+  confirmedReferrals.forEach(ref => {
+    ref.status = 'paid';
+    ref.paidDate = nowISO();
+    
+    // Create payout record
+    state.payouts.push({
+      account: ref.affiliate,
+      amount: state.config.affiliateBonus,
+      date: nowISO(),
+      type: 'affiliate',
+      note: `Affiliate bonus for referral ${ref.referredPhone}`
+    });
+  });
+  
+  saveState(state);
+  renderPayoutsAdmin();
+  renderAffiliateAdmin();
+  showNotification(`Processed ${confirmedReferrals.length} affiliate payouts`);
+}
+
 function awardTopThisWeek(){
   const wk = getWeekKey(); 
   const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> {
     if (b.score !== a.score) return b.score - a.score;
     return a.timeTaken - b.timeTaken;
   });
-  if(entries.length===0){ alert('No entries this week'); return; }
+  if(entries.length===0){ showNotification('No entries this week', 'warning'); return; }
   const top = entries[0];
   const amount = Math.floor(Math.random() * (state.config.prizeMax - state.config.prizeMin + 1)) + state.config.prizeMin;
   state.payouts.push({ account: top.account, amount, date: nowISO(), img:null, note:'Auto-awarded' });
   if(!state.users[top.account]) state.users[top.account] = { acct:top.account, purchases:[], balance:0, reviews:[] };
   state.users[top.account].balance = (state.users[top.account].balance||0) + amount;
-  saveState(state); renderPayoutsAdmin(); renderProofList(); renderUser(); alert(`Awarded ${formatN(amount)} to ${top.account}`);
+  saveState(state); renderPayoutsAdmin(); renderProofList(); renderUser(); showNotification(`Awarded ${formatN(amount)} to ${top.account}`);
 }
 
 // --- Utility UI wiring & init ---
@@ -1375,8 +1800,9 @@ document.getElementById('saveQuizQ').addEventListener('click', adminSaveQuestion
 document.getElementById('exportData').addEventListener('click', exportData);
 document.getElementById('adminResetBtn').addEventListener('click', adminReset);
 document.getElementById('awardTop').addEventListener('click', awardTopThisWeek);
+document.getElementById('processAffiliatePayouts').addEventListener('click', processAffiliatePayouts);
 document.getElementById('viewHistory').addEventListener('click', ()=>{
-  if(!currentUser){ alert('Login first'); openModal('modalLogin'); return; }
+  if(!currentUser){ showNotification('Login first', 'error'); openModal('modalLogin'); return; }
   const items = (currentUser.purchases||[]).slice().reverse();
   let html = `<h3>Purchase History</h3><div class="card" style="margin-top:8px">`;
   if(items.length===0) html += '<div class="small muted center">No purchases</div>';
@@ -1386,6 +1812,9 @@ document.getElementById('viewHistory').addEventListener('click', ()=>{
 });
 document.getElementById('addReviewBtn').addEventListener('click', addReview);
 document.getElementById('viewReviews').addEventListener('click', showReviews);
+document.getElementById('openAffiliate').addEventListener('click', openAffiliateModal);
+document.getElementById('addReferralBtn').addEventListener('click', openAffiliateModal);
+document.getElementById('submitReferral').addEventListener('click', addReferral);
 document.getElementById('sellerPhone').addEventListener('change', adminSaveConfig);
 document.getElementById('prizeMin').addEventListener('change', adminSaveConfig);
 document.getElementById('prizeMax').addEventListener('change', adminSaveConfig);
@@ -1409,6 +1838,7 @@ renderUser();
 updateSellerPhone();
 renderProofList();
 renderPayoutsAdmin();
+renderAffiliateAdmin();
 updateQuizStatus();
 
 </script>

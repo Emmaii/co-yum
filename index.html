@@ -3,340 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CO-YUM — Sandwiches & Quiz</title>
+  <title>CO-YUM — Sandwiches & Affiliate</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
+    /* Dark, minimalist UI with blue accents */
     :root{
-      --bg1:#071024; --bg2:#11263f; --card:#0b1220; --accent:#ff7b54; --accent-2:#ff5722;
-      --muted:#9aa4b2; --light:#e6eef6; --glass: rgba(255,255,255,0.03); --success:#4caf50;
-      --warning:#ff9800; --error:#f44336; --shadow: 0 8px 30px rgba(2,6,23,0.6); --radius:14px;
-      --affiliate: #9c27b0;
+      --bg:#000000;
+      --card:#0b0b0f;
+      --muted:#95a0b3;
+      --text:#ffffff;
+      --accent:#1e90ff; /* dodger blue */
+      --accent-2:#08a0ff;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --shadow: 0 10px 30px rgba(2,6,23,0.6);
+      --success:#22c55e;
+      --warning:#f59e0b;
+      --danger:#ef4444;
     }
     *{box-sizing:border-box}
-    html,body{height:100%; margin:0; font-family:'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:var(--light); -webkit-font-smoothing:antialiased; line-height:1.5}
-    .container{max-width:1150px;margin:0 auto;padding:20px}
-    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    html,body{height:100%; margin:0; font-family:Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 10px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#061122;font-size:20px}
-    h1{font-size:18px;margin:0}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#021225;font-size:18px;box-shadow:0 6px 18px rgba(30,144,255,0.12)}
+    h1{font-size:18px;margin:0;color:var(--text)}
     nav{display:flex;gap:10px;align-items:center}
-    .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:600;transition: all 0.2s ease}
-    .nav-btn:hover{background:rgba(255,255,255,0.05)}
-    .nav-btn.primary{background:var(--accent);color:#061122;border:none}
-    .nav-btn.primary:hover{background:var(--accent-2)}
-    .nav-btn.affiliate{background:var(--affiliate);color:#fff;border:none}
-    .nav-btn.affiliate:hover{background:#8e24aa}
+    .nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-weight:700;transition: all 0.16s ease}
+    .nav-btn:hover{background:rgba(255,255,255,0.02); color:var(--text)}
+    .nav-btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021225;border:none}
+    .nav-btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
     main{padding:22px 0}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:22px}
     @media(max-width:980px){ .grid{grid-template-columns:1fr} .sidebar{position:static} }
     .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
     .card h2{margin:0 0 8px;font-weight:700}
-    .card h3{margin:0 0 10px;font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
     .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
     .product{
       background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
+      border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
       transition: transform 180ms ease, box-shadow 180ms ease;
       position:relative;
-      display:flex;flex-direction:column;
+      display:flex;flex-direction:column; min-height:320px;
     }
-    .product:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.6) }
-    .img-wrap{position:relative;overflow:hidden}
-    .product img{width:100%;height:190px;object-fit:cover;display:block;transition: transform 300ms ease}
-    .product:hover img{ transform: scale(1.03) }
-    .badge{
-      position:absolute; left:10px; top:10px; padding:8px 10px; border-radius:999px; font-weight:800; font-size:12px;
-      background:rgba(6,17,34,0.6); color:var(--light); border:1px solid rgba(255,255,255,0.04);
-    }
-    .product .body{padding:14px; display:flex;flex-direction:column; gap:8px; flex:1}
-    .title{font-weight:800; font-size:15px}
+    .product:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(2,6,23,0.6) }
+    .img-wrap{position:relative;overflow:hidden;height:160px;background:linear-gradient(120deg, rgba(30,144,255,0.04), rgba(8,160,255,0.02)); display:flex;align-items:center;justify-content:center}
+    .product img{width:100%;height:160px;object-fit:cover;display:block;transition: transform 300ms ease}
+    .badge{ position:absolute; left:12px; top:12px; padding:8px 10px; border-radius:999px; font-weight:800; font-size:12px; background:rgba(2,6,23,0.6); color:var(--text); border:1px solid rgba(255,255,255,0.04) }
+    .product .body{padding:14px; display:flex;flex-direction:column; gap:10px; flex:1}
+    .title{font-weight:800; font-size:16px; color:var(--text)}
     .desc{color:var(--muted);font-size:13px;margin-top:2px}
     .product .footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
     .price{font-weight:900;color:var(--accent); font-size:16px}
-    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#061122;font-weight:800;cursor:pointer;transition: all 0.2s ease}
-    .btn:hover{background:var(--accent-2);transform: translateY(-2px)}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#021225;font-weight:800;cursor:pointer;transition: all 0.18s ease;box-shadow:0 8px 20px rgba(30,144,255,0.08)}
+    .btn:hover{background:var(--accent-2); transform: translateY(-2px)}
     .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .btn.ghost:hover{background:rgba(255,255,255,0.05);transform: translateY(-2px)}
-    .btn.affiliate{background:var(--affiliate);color:#fff}
-    .btn.affiliate:hover{background:#8e24aa}
     .sidebar{position:sticky;top:90px}
-    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
     .muted{color:var(--muted)}
     .center{text-align:center}
-    .progress{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden}
-    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition: width 0.5s ease}
-    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03)}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60;padding:20px;backdrop-filter:blur(4px)}
-    .modal.active{display:flex}
-    .modal .panel{width:100%;max-width:760px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);max-height:90vh;overflow:auto}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--text);width:100%;transition: all 0.2s ease}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(30,144,255,0.06)}
     .flex{display:flex;gap:10px}
     .flex-between{display:flex;justify-content:space-between;align-items:center}
-    .small{font-size:13px;color:var(--muted)}
-    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--light);width:100%;transition: all 0.2s ease}
-    input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,123,84,0.2)}
-    .quiz-question{padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px}
-    .quiz-option{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer;margin-bottom:8px;transition: all 0.2s ease}
-    .quiz-option:hover{background:rgba(255,255,255,0.05)}
-    .quiz-option.selected{background:rgba(255,123,84,0.18);border:1px solid var(--accent)}
-    table{width:100%;border-collapse:collapse}
-    table td,table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
-    
-    /* Quiz Status Styles */
-    .quiz-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .quiz-badge {
-      background: var(--accent);
-      color: #061122;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: 800;
-      font-size: 12px;
-    }
-    .quiz-badge.prep {
-      background: var(--warning);
-    }
-    .quiz-badge.mini {
-      background: var(--success);
-    }
-    
-    /* Countdown Timer */
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 12px 0;
-    }
-    .countdown-item {
-      background: rgba(255,255,255,0.05);
-      border-radius: 8px;
-      padding: 8px;
-      text-align: center;
-      min-width: 50px;
-    }
-    .countdown-value {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    .countdown-label {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    
-    /* Affiliate Section */
-    .affiliate-card {
-      border-left: 4px solid var(--affiliate);
-    }
-    .affiliate-badge {
-      background: var(--affiliate);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .referral-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-    }
+    .referral-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
     .status-pending { color: var(--warning) }
     .status-confirmed { color: var(--success) }
-    .status-paid { color: var(--affiliate) }
-    
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: var(--shadow);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transform: translateX(150%);
-      transition: transform 0.3s ease;
-    }
-    .notification.show {
-      transform: translateX(0);
-    }
-    .notification.success { border-left: 4px solid var(--success) }
-    .notification.error { border-left: 4px solid var(--error) }
-    .notification.warning { border-left: 4px solid var(--warning) }
-    
-    /* Mobile Responsive Styles */
-    @media (max-width: 768px) {
-      .container {
-        padding: 10px;
-      }
-      
-      .header-row {
-        flex-direction: column;
-        gap: 12px;
-        padding: 10px 0;
-      }
-      
-      nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
-      }
-      
-      .nav-btn {
-        font-size: 14px;
-        padding: 6px 10px;
-        flex: 1;
-        min-width: 120px;
-        text-align: center;
-      }
-      
-      .grid {
-        gap: 15px;
-      }
-      
-      .products {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      
-      .product .body {
-        padding: 12px;
-      }
-      
-      .product img {
-        height: 160px;
-      }
-      
-      .card {
-        padding: 12px;
-      }
-      
-      .flex-between {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      
-      .modal .panel {
-        padding: 14px;
-        margin: 10px;
-      }
-      
-      .flex {
-        flex-direction: column;
-      }
-      
-      .quiz-question {
-        padding: 10px;
-      }
-      
-      .quiz-option {
-        padding: 8px;
-      }
-      
-      table {
-        font-size: 14px;
-      }
-      
-      table td, table th {
-        padding: 6px;
-      }
-      
-      footer {
-        padding: 12px;
-        font-size: 12px;
-      }
-      
-      .countdown {
-        gap: 5px;
-      }
-      
-      .countdown-item {
-        min-width: 40px;
-        padding: 6px;
-      }
-      
-      .countdown-value {
-        font-size: 16px;
-      }
-      
-      .notification {
-        top: 10px;
-        right: 10px;
-        left: 10px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .brand {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
-      }
-      
-      .logo {
-        width: 44px;
-        height: 44px;
-        font-size: 14px;
-      }
-      
-      h1 {
-        font-size: 16px;
-      }
-      
-      .nav-btn {
-        font-size: 12px;
-        padding: 5px 8px;
-        min-width: 100px;
-      }
-      
-      .product img {
-        height: 140px;
-      }
-      
-      .title {
-        font-size: 14px;
-      }
-      
-      .desc {
-        font-size: 12px;
-      }
-      
-      .price {
-        font-size: 14px;
-      }
-      
-      .btn {
-        padding: 6px 10px;
-        font-size: 14px;
-      }
-      
-      .modal .panel {
-        padding: 12px;
-      }
-      
-      .quiz-timer {
-        font-size: 18px;
-      }
+    .status-paid { color: var(--accent) }
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px;border-top:1px solid rgba(255,255,255,0.03)}
+    @media (max-width:768px){
+      .container{padding:12px}
+      .header-row{flex-direction:column;gap:10px;padding:10px 0}
+      nav{flex-wrap:wrap;justify-content:center}
+      .grid{gap:14px}
+      .products{grid-template-columns:1fr}
+      .sidebar{position:static}
     }
   </style>
 </head>
 <body>
-  <div id="notification" class="notification">
-    <i class="fas fa-info-circle"></i>
-    <span id="notificationText">Notification message</span>
+  <div id="notification" style="position:fixed;right:18px;top:18px;z-index:120;display:none">
+    <div style="background:var(--card);border-radius:10px;padding:10px 14px;border:1px solid rgba(255,255,255,0.04);box-shadow:var(--shadow)"><span id="notificationText" style="color:var(--text)"></span></div>
   </div>
 
   <header>
@@ -346,18 +96,20 @@
           <div class="logo">CY</div>
           <div>
             <h1>CO-YUM</h1>
-            <div class="small muted">Sandwiches · Quizzes · Cash prizes</div>
+            <div class="small muted">Fresh sandwiches — affiliates first</div>
           </div>
         </div>
 
         <nav>
-          <div id="welcome" class="small muted" style="margin-right:8px">Not logged in</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input id="searchInput" placeholder="Search menu" style="min-width:200px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)">
+            <button id="clearSearch" class="nav-btn ghost" title="Clear"><i class="fas fa-times"></i></button>
+          </div>
 
-          <button id="loginBtn" class="nav-btn"><i class="fas fa-user"></i>&nbsp;Login (OPAY)</button>
-          <button id="openAdmin" class="nav-btn"><i class="fas fa-cog"></i>&nbsp;Admin</button>
-          <button id="viewLeaderboard" class="nav-btn"><i class="fas fa-trophy"></i>&nbsp;Leaderboard</button>
-          <button id="viewReviews" class="nav-btn"><i class="fas fa-comments"></i>&nbsp;Reviews</button>
-          <button id="openAffiliate" class="nav-btn affiliate"><i class="fas fa-users"></i>&nbsp;Affiliate</button>
+          <div id="welcome" class="small muted" style="margin-left:8px">Not logged in</div>
+          <button id="loginBtn" class="nav-btn"><i class="fas fa-user"></i>&nbsp;Login</button>
+          <button id="openAffiliate" class="nav-btn" style="background:transparent;border:1px solid rgba(30,144,255,0.14);color:var(--accent)"><i class="fas fa-users"></i>&nbsp;Affiliate</button>
+          <button id="openAdmin" class="nav-btn"><i class="fas fa-cog"></i></button>
         </nav>
       </div>
     </div>
@@ -371,65 +123,23 @@
           <div class="card">
             <div class="flex-between">
               <div>
-                <h2>Menu — Fresh Sandwiches & Smoothies</h2>
-                <div class="small muted">Order online & qualify for weekly quiz prizes</div>
+                <h2>Menu</h2>
+                <div class="small muted">Succinct. Fast. Clear.</div>
               </div>
-              <div class="small muted"><i class="fas fa-phone"></i>&nbsp;Seller WhatsApp: <span id="sellerPhoneDisplay">+2348103606602</span></div>
+              <div class="small muted"><i class="fas fa-phone"></i>&nbsp;Seller: <span id="sellerPhoneDisplay">+2348103606602</span></div>
             </div>
 
             <div style="margin-top:14px" id="products" class="products"></div>
           </div>
 
           <div class="card" style="margin-top:14px">
-            <h3>How CO-YUM Works</h3>
-            <ol class="small muted" style="margin-top:8px">
-              <li>Login with your OPAY account number (we use it to identify you).</li>
-              <li>Buy at least <strong>two sandwiches</strong> OR <strong>one smoothie</strong> within the same week to qualify for Saturday's quiz.</li>
-              <li>On Saturday, eligible users take a timed quiz — top scorer wins ₦5,000–₦10,000.</li>
-              <li>Checkout redirects to WhatsApp with a pre-filled order.</li>
-            </ol>
-          </div>
-
-          <div class="card" style="margin-top:14px">
-            <div class="quiz-status">
-              <div id="quizBadge" class="quiz-badge">QUIZ DAY</div>
-              <div id="quizStatusText" class="small">Quiz is available today!</div>
-            </div>
-            
-            <div id="countdownContainer" style="display: none;">
-              <div class="small muted center">Saturday Main Quiz in:</div>
-              <div class="countdown">
-                <div class="countdown-item">
-                  <div id="countdownDays" class="countdown-value">0</div>
-                  <div class="countdown-label">Days</div>
-                </div>
-                <div class="countdown-item">
-                  <div id="countdownHours" class="countdown-value">0</div>
-                  <div class="countdown-label">Hours</div>
-                </div>
-                <div class="countdown-item">
-                  <div id="countdownMinutes" class="countdown-value">0</div>
-                  <div class="countdown-label">Minutes</div>
-                </div>
-                <div class="countdown-item">
-                  <div id="countdownSeconds" class="countdown-value">0</div>
-                  <div class="countdown-label">Seconds</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="small muted" id="quizInfo">Eligibility: 2+ sandwiches OR 1+ smoothie in the same week.</div>
-
-            <div style="margin-top:12px">
-              <div class="flex-between">
-                <div class="small">Progress to qualify</div>
-                <div id="progressText" class="small muted">0/2 sandwiches or 0/1 smoothie</div>
-              </div>
-              <div class="progress" style="margin-top:8px"><i id="progressFill" style="width:0%"></i></div>
-            </div>
-
-            <div style="margin-top:12px">
-              <button id="openQuiz" class="btn"><i class="fas fa-play-circle"></i>&nbsp;Open Quiz</button>
+            <h3 style="margin:0 0 8px">How it works</h3>
+            <div class="small muted">
+              <ul style="margin:6px 0 0 18px;padding:0">
+                <li>Login with an OPAY account (demo).</li>
+                <li>Refer friends via link or add their account — earn when they buy.</li>
+                <li>Checkout opens WhatsApp with your order pre-filled.</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -444,7 +154,7 @@
               <div id="cartTotal" class="small" style="font-weight:900">₦0</div>
             </div>
             <div style="margin-top:12px">
-              <button id="checkoutBtn" class="btn" style="width:100%"><i class="fab fa-whatsapp"></i>&nbsp;Checkout (WhatsApp)</button>
+              <button id="checkoutBtn" class="btn" style="width:100%"><i class="fab fa-whatsapp"></i>&nbsp;Checkout</button>
             </div>
           </div>
 
@@ -452,419 +162,183 @@
             <h3>Your Profile</h3>
             <div style="margin-top:8px" class="small muted">
               <div class="flex-between"><span>Account:</span><span id="acctNumber">—</span></div>
-              <div class="flex-between" style="margin-top:6px"><span>Sandwiches this week:</span><span id="sandwichesCount">0</span></div>
-              <div class="flex-between" style="margin-top:6px"><span>Smoothies this week:</span><span id="smoothiesCount">0</span></div>
-              <div class="flex-between" style="margin-top:6px"><span>Balance:</span><span>₦<span id="balance">0</span></span></div>
-              <div class="flex-between" style="margin-top:6px"><span>Affiliate Earnings:</span><span>₦<span id="affiliateBalance">0</span></span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Purchases (local):</span><span id="weekPurchases">0</span></div>
+              <div class="flex-between" style="margin-top:6px"><span>Affiliate:</span><span>₦<span id="affiliateBalance">0</span></span></div>
             </div>
-            <div style="margin-top:12px"><button id="viewHistory" class="nav-btn" style="width:100%"> <i class="fas fa-history"></i>&nbsp;Purchase History</button></div>
+            <div style="margin-top:12px"><button id="viewHistory" class="nav-btn" style="width:100%"><i class="fas fa-history"></i>&nbsp;History</button></div>
           </div>
 
-          <div class="card affiliate-card" style="margin-top:12px">
-            <h3><i class="fas fa-users"></i> Affiliate Program</h3>
-            <div class="small muted">Earn ₦500 for each referral who buys and reviews</div>
-            <div style="margin-top:10px">
-              <div class="flex-between">
-                <span class="small">Your Referrals:</span>
-                <span id="referralCount" class="small">0</span>
-              </div>
-              <div class="flex-between" style="margin-top:4px">
-                <span class="small">Confirmed Referrals:</span>
-                <span id="confirmedReferrals" class="small">0</span>
+          <div class="card" style="margin-top:12px; border-left:4px solid var(--accent);">
+            <h3 style="margin:0 0 8px"><i class="fas fa-link"></i> Affiliate</h3>
+            <div class="small muted">Earn ₦500 per confirmed referral (default)</div>
+
+            <div style="margin-top:12px">
+              <div class="small muted">Your referral link</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="referralLink" readonly style="min-width:0;padding:8px">
+                <button id="copyReferral" class="nav-btn">Copy</button>
               </div>
             </div>
-            <div style="margin-top:10px">
-              <button id="addReferralBtn" class="btn affiliate" style="width:100%"><i class="fas fa-plus-circle"></i>&nbsp;Add Referral</button>
+
+            <div style="margin-top:12px">
+              <div class="small muted">Add referral by OPAY account</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="referralPhoneInput" placeholder="Referral OPAY account (10-11 digits)" type="tel" maxlength="11">
+                <button id="submitReferral" class="btn" style="background:var(--accent)"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="flex-between small muted"><span>Referrals:</span><span id="referralCount">0</span></div>
+              <div class="flex-between small muted" style="margin-top:6px"><span>Confirmed:</span><span id="confirmedReferrals">0</span></div>
+            </div>
+
+            <div style="margin-top:12px">
+              <button id="requestPayout" class="btn" style="width:100%">Request Payout</button>
             </div>
           </div>
 
           <div class="card" style="margin-top:12px">
-            <h3>Proof & Reviews</h3>
-            <div id="proofList" style="max-height:200px;overflow:auto;margin-top:8px"><div class="center small muted">No payouts yet</div></div>
-            <div style="margin-top:10px"><button id="addReviewBtn" class="nav-btn" style="width:100%"><i class="fas fa-plus-circle"></i>&nbsp;Add Review / Proof</button></div>
+            <h3>Proofs</h3>
+            <div id="proofList" style="max-height:200px;overflow:auto;margin-top:8px"><div class="center small muted">No proofs yet</div></div>
+            <div style="margin-top:10px"><button id="addProofBtn" class="nav-btn" style="width:100%"><i class="fas fa-plus-circle"></i>&nbsp;Add Proof</button></div>
           </div>
         </aside>
       </div>
     </div>
   </main>
 
-  <footer><div class="container small muted">CO-YUM — static demo. Works offline via browser localStorage. Customize seller phone & quiz in Admin.</div></footer>
+  <footer><div class="container small muted">CO-YUM — dark, clear, affiliate-first demo. Local demo only.</div></footer>
 
   <!-- Modals -->
-  <div id="modalLogin" class="modal"><div class="panel">
-    <div class="flex-between"><h3>Login — OPAY Account</h3><button class="nav-btn" data-modal="modalLogin" aria-label="close">&times;</button></div>
-    <div style="margin-top:12px"><input id="inputAcct" placeholder="Enter OPAY account (10-11 digits only)" type="tel" maxlength="11"></div>
-    <div class="small muted" style="margin-top:4px">Must be 10-11 digits only, no letters or special characters</div>
-    <div style="margin-top:10px" class="flex"><button id="doLogin" class="btn">Login</button><button class="nav-btn" data-modal="modalLogin">Cancel</button></div>
-  </div></div>
-
-  <div id="modalQuiz" class="modal"><div class="panel">
-    <div class="flex-between"><h3>Weekly Nutrition Quiz</h3><button class="nav-btn" data-modal="modalQuiz">&times;</button></div>
-    <div id="quizArea" style="margin-top:12px"></div>
-    <div class="quiz-timer center" id="quizTimer" style="margin-top:12px;font-weight:800">00:00</div>
-    <div class="flex-between" style="margin-top:12px"><div class="small muted">Complete all questions before time runs out</div>
-      <div class="flex"><button id="startQuiz" class="btn">Start Quiz</button><button class="nav-btn" data-modal="modalQuiz">Close</button></div>
+  <div id="modalLogin" class="modal" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90">
+    <div class="panel" style="max-width:520px">
+      <div class="flex-between"><h3>Login — OPAY account</h3><button class="nav-btn" data-modal="modalLogin" aria-label="close">&times;</button></div>
+      <div style="margin-top:12px"><input id="inputAcct" placeholder="Enter OPAY account (10-11 digits only)" type="tel" maxlength="11"></div>
+      <div class="small muted" style="margin-top:6px">Demo accounts are stored locally only.</div>
+      <div style="margin-top:12px" class="flex"><button id="doLogin" class="btn">Login</button><button class="nav-btn" data-modal="modalLogin">Cancel</button></div>
     </div>
-  </div></div>
+  </div>
 
-  <div id="modalAdmin" class="modal"><div class="panel">
-    <div class="flex-between"><h3>Admin Panel</h3><button class="nav-btn" data-modal="modalAdmin">&times;</button></div>
-    <div style="margin-top:10px" class="flex">
-      <input id="adminPass" type="password" placeholder="Enter admin password (default: admin123)">
-      <button id="adminLoginBtn" class="btn">Unlock</button>
-    </div>
-
-    <div id="adminArea" style="display:none;margin-top:12px">
-      <h4>Configuration</h4>
-      <div style="margin-top:8px"><input id="sellerPhone" placeholder="Seller phone (e.g. +2348103606602)"></div>
-      <div style="margin-top:8px" class="flex">
-        <input id="prizeMin" type="number" placeholder="Prize min (5000)">
-        <input id="prizeMax" type="number" placeholder="Prize max (10000)">
+  <div id="modalAdmin" class="modal" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90">
+    <div class="panel" style="max-width:760px">
+      <div class="flex-between"><h3>Admin</h3><button class="nav-btn" data-modal="modalAdmin">&times;</button></div>
+      <div style="margin-top:10px" class="flex">
+        <input id="adminPass" type="password" placeholder="Admin password (default: admin123)">
+        <button id="adminLoginBtn" class="btn">Unlock</button>
       </div>
-
-      <h4 style="margin-top:12px">Quiz Questions</h4>
-      <div style="margin-top:8px"><textarea id="newQuestions" rows="6" placeholder='JSON array: [{"q":"Question?","choices":["a","b"],"answer":0}]'></textarea></div>
-      <div style="margin-top:8px" class="flex">
-        <button id="saveQuizQ" class="btn">Save Questions</button>
-        <button id="exportData" class="nav-btn">Export Data</button>
-        <button id="adminResetBtn" class="nav-btn">Reset Leaderboard</button>
-      </div>
-
-      <h4 style="margin-top:12px">Payouts & Proofs</h4>
-      <div id="payoutsAdmin" style="margin-top:8px"></div>
-
-      <div style="margin-top:12px"><button id="awardTop" class="btn">Auto-Award This Week Top</button></div>
-      
-      <h4 style="margin-top:12px">Affiliate Management</h4>
-      <div id="affiliateAdmin" style="margin-top:8px"></div>
-      <div style="margin-top:8px" class="flex">
-        <button id="processAffiliatePayouts" class="btn affiliate">Process Affiliate Payouts</button>
+      <div id="adminArea" style="display:none;margin-top:12px">
+        <h4>Config</h4>
+        <div style="margin-top:8px"><input id="sellerPhone" placeholder="Seller phone (e.g. +2348103606602)"></div>
+        <div style="margin-top:8px" class="flex">
+          <input id="affiliateBonus" type="number" placeholder="Affiliate bonus (500)" min="0">
+          <input id="minPayout" type="number" placeholder="Min payout (1000)" min="0">
+        </div>
+        <h4 style="margin-top:12px">Data</h4>
+        <div class="flex" style="margin-top:8px">
+          <button id="exportData" class="btn">Export</button>
+          <button id="importDataBtn" class="nav-btn">Import</button>
+          <input id="importFile" type="file" accept=".json" style="display:none">
+        </div>
+        <h4 style="margin-top:12px">Payouts</h4>
+        <div id="payoutsAdmin" style="margin-top:8px"></div>
+        <div style="margin-top:12px"><button id="processAllPayouts" class="btn" style="background:var(--accent)">Process all pending</button></div>
       </div>
     </div>
-  </div></div>
+  </div>
 
-  <div id="modalReviews" class="modal"><div class="panel">
-    <div class="flex-between"><h3>Reviews & Leaderboard</h3><button class="nav-btn" data-modal="modalReviews">&times;</button></div>
-    <div id="reviewsArea" style="margin-top:12px"></div>
-  </div></div>
-
-  <div id="modalAffiliate" class="modal"><div class="panel">
-    <div class="flex-between"><h3><i class="fas fa-users"></i> Affiliate Program</h3><button class="nav-btn" data-modal="modalAffiliate">&times;</button></div>
-    
-    <div class="card affiliate-card" style="margin-top:12px">
-      <h4>How It Works</h4>
-      <div class="small muted">
-        <p>1. Refer friends by entering their OPAY account number</p>
-        <p>2. When your referral makes a purchase and leaves a review</p>
-        <p>3. You earn ₦500 for each confirmed referral</p>
-        <p>4. Earnings are paid directly to your OPAY account</p>
+  <div id="modalAffiliate" class="modal" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90">
+    <div class="panel" style="max-width:700px">
+      <div class="flex-between"><h3>Affiliate</h3><button class="nav-btn" data-modal="modalAffiliate">&times;</button></div>
+      <div style="margin-top:12px">
+        <h4>Your referrals</h4>
+        <div id="referralsList" style="max-height:280px;overflow:auto;margin-top:8px"><div class="center small muted">No referrals yet</div></div>
+      </div>
+      <div style="margin-top:12px">
+        <h4>Payouts</h4>
+        <div id="payoutsList" style="max-height:220px;overflow:auto;margin-top:8px"><div class="center small muted">No payout requests</div></div>
       </div>
     </div>
-    
-    <div style="margin-top:12px">
-      <h4>Add New Referral</h4>
-      <div style="margin-top:8px">
-        <input id="referralPhoneInput" placeholder="Referral's OPAY account (10-11 digits)" type="tel" maxlength="11">
-        <div class="small muted" style="margin-top:4px">Must be 10-11 digits only, no letters or special characters</div>
-      </div>
+  </div>
+
+  <div id="modalProof" class="modal" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90">
+    <div class="panel" style="max-width:560px">
+      <div class="flex-between"><h3>Add proof</h3><button class="nav-btn" data-modal="modalProof">&times;</button></div>
       <div style="margin-top:10px">
-        <button id="submitReferral" class="btn affiliate">Submit Referral</button>
+        <textarea id="proofText" rows="4" placeholder="Payment screenshot link or notes"></textarea>
+        <div style="margin-top:10px" class="flex"><button id="saveProof" class="btn">Save</button><button class="nav-btn" data-modal="modalProof">Cancel</button></div>
       </div>
     </div>
-    
-    <div style="margin-top:16px">
-      <h4>Your Referrals</h4>
-      <div id="referralsList" style="max-height:300px;overflow:auto;margin-top:8px">
-        <div class="center small muted">No referrals yet</div>
-      </div>
-    </div>
-  </div></div>
+  </div>
 
 <script>
-/* =========================
-   CO-YUM single-file app
-   HTML/CSS/JS only — uses localStorage
-   Updated with enhanced UI and affiliate system
-   ========================= */
+/* CO-YUM — dark UI, affiliate-first, updated products
+   - removed Veggie Delight & Premium Fruit Smoothie
+   - added Five Alive Puppy (Big Size) for ₦500
+   - UI tuned for clarity, black background, white text, blue accents
+*/
 
-const STORE_KEY = 'coyum_v10'; // new key for affiliate system
+const STORE_KEY = 'coyum_v12_dark';
 const DEFAULT = {
   products: [
-    {
-      id:'s1',
-      title:'Classic Chicken Sandwich',
-      desc:'Tender, juicy chicken breast, crisp lettuce, vine-ripened tomato & CO-YUM signature sauce on toasted bread.',
-      price:2500,
-      img:'sandwich.jpg',
-      badge: 'Best seller',
-      type: 'sandwich'
-    },
-    {
-      id:'s2',
-      title:'Premium Fruit Smoothie',
-      desc:'Blend of fresh seasonal fruits, creamy yogurt, and natural sweeteners for a refreshing healthy drink.',
-      price:4500,
-      img:'smoothie.jpg',
-      badge: 'New',
-      type: 'smoothie'
-    }
+    { id:'s1', title:'Classic Chicken Sandwich', desc:'Tender chicken, crisp lettuce, signature sauce on toasted bread.', price:2500, img:'sandwich.jpg', badge: 'Best seller', type:'sandwich' },
+    { id:'s2', title:'Five Alive Puppy (Big Size)', desc:'Big, refreshing Five Alive — puppy size (500ml).', price:500, img:'fivealive.jpg', badge: 'Drink', type:'drink' }
   ],
   users:{},
-  leaderboard:[],
-  reviews:[],
+  referrals:[],
   payouts:[],
-  referrals: [],
-  config:{ sellerPhone:'+2348103606602', prizeMin:5000, prizeMax:10000, adminPass:'admin123', affiliateBonus: 500 },
-  quizQuestions:[
-    {q:'Which food group is a primary source of dietary fibre?', choices:['Fruits & vegetables','Oils','Sweets','Soda'], answer:0},
-    {q:'Which vitamin is abundant in citrus fruits?', choices:['Vitamin A','Vitamin C','Vitamin K','Vitamin D'], answer:1},
-    {q:'What is a healthy protein source for vegetarians?', choices:['Lentils','Bacon','Soda','Candy'], answer:0},
-    {q:'Which nutrient helps build and repair body tissues?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0},
-    {q:'How many servings of vegetables should you eat daily?', choices:['1-2','3-5','6-8','9+'], answer:1},
-    {q:'Which mineral is important for bone health?', choices:['Iron','Calcium','Sodium','Potassium'], answer:1},
-    {q:'What percentage of your body is water?', choices:['30%','50%','60%','80%'], answer:2},
-    {q:'Which is a complex carbohydrate?', choices:['White bread','Brown rice','Sugar','Honey'], answer:1},
-    {q:'What is the main function of carbohydrates?', choices:['Build muscle','Provide energy','Insulate organs','Transport oxygen'], answer:1},
-    {q:'Which food is high in omega-3 fatty acids?', choices:['Salmon','Beef','Cheese','Bread'], answer:0},
-    {q:'What does BMI stand for?', choices:['Body Mass Index','Basic Metabolic Indicator','Bone Marrow Index','Blood Measurement Index'], answer:0},
-    {q:'Which vitamin is produced when skin is exposed to sunlight?', choices:['Vitamin A','Vitamin C','Vitamin D','Vitamin K'], answer:2},
-    {q:'What is the recommended daily water intake?', choices:['1-2 glasses','4-6 glasses','8-10 glasses','12+ glasses'], answer:2},
-    {q:'Which food is a good source of probiotics?', choices:['Yogurt','Bread','Rice','Meat'], answer:0},
-    {q:'What nutrient helps with muscle recovery after exercise?', choices:['Protein','Carbohydrates','Fats','Vitamins'], answer:0},
-    {q:'Which fruit is highest in potassium?', choices:['Apple','Orange','Banana','Grapes'], answer:2},
-    {q:'What is the role of antioxidants?', choices:['Build muscle','Protect cells from damage','Provide energy','Aid digestion'], answer:1},
-    {q:'Which is a whole grain?', choices:['White bread','White rice','Oatmeal','Pasta'], answer:2},
-    {q:'What is the main sugar found in milk?', choices:['Fructose','Glucose','Lactose','Sucrose'], answer:2},
-    {q:'Which mineral is important for carrying oxygen in blood?', choices:['Calcium','Iron','Sodium','Potassium'], answer:1}
-  ]
+  proofs:[],
+  config:{ sellerPhone:'+2348103606602', adminPass:'admin123', affiliateBonus:500, minPayout:1000 }
 };
 
-// --- Enhanced Storage & Data Management ---
-function loadState(){ 
-  try{ 
-    const s = localStorage.getItem(STORE_KEY); 
-    if(!s){ 
-      localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); 
-      return JSON.parse(JSON.stringify(DEFAULT)); 
-    } 
-    return JSON.parse(s);
-  } catch(e){ 
-    console.error('Error loading state:', e);
-    localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); 
-    return JSON.parse(JSON.stringify(DEFAULT)); 
-  } 
-}
-
-function saveState(s){ 
-  try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(s)); 
-    return true;
-  } catch(e) {
-    console.error('Error saving state:', e);
-    return false;
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw){ localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT)); return JSON.parse(JSON.stringify(DEFAULT)); }
+    const parsed = JSON.parse(raw);
+    parsed.products = parsed.products || DEFAULT.products;
+    parsed.users = parsed.users || {};
+    parsed.referrals = parsed.referrals || [];
+    parsed.payouts = parsed.payouts || [];
+    parsed.proofs = parsed.proofs || [];
+    parsed.config = Object.assign({}, DEFAULT.config, parsed.config || {});
+    return parsed;
+  }catch(e){
+    console.error('load error',e);
+    localStorage.setItem(STORE_KEY, JSON.stringify(DEFAULT));
+    return JSON.parse(JSON.stringify(DEFAULT));
   }
 }
+function saveState(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); return true }catch(e){ console.error(e); return false } }
 
-// Enhanced data validation
-function validateQuizRecord(record) {
-  return record && 
-         typeof record.account === 'string' &&
-         typeof record.score === 'number' &&
-         typeof record.total === 'number' &&
-         typeof record.timeTaken === 'number' &&
-         typeof record.completionTime === 'string' &&
-         typeof record.week === 'string' &&
-         typeof record.quizType === 'string';
-}
-
-function validateReviewRecord(review) {
-  return review &&
-         typeof review.account === 'string' &&
-         typeof review.text === 'string' &&
-         typeof review.date === 'string';
-}
-
-// --- Enhanced Helper Functions ---
-function uid(len=6){ return Math.random().toString(36).slice(2,2+len) }
-function nowISO(){ return new Date().toISOString() }
-function formatN(n){ return '₦'+Number(n).toLocaleString() }
-
-// Improved week key function to ensure data retention
-function getWeekKey(d=new Date()){
-  const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = tmp.getUTCDay() || 7;
-  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
-  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1)/7);
-  return tmp.getUTCFullYear() + '-W' + String(weekNo).padStart(2,'0');
-}
-
-// Get next Saturday
-function getNextSaturday() {
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-  const daysUntilSaturday = dayOfWeek === 6 ? 7 : (6 - dayOfWeek + 7) % 7;
-  
-  const nextSaturday = new Date(today);
-  nextSaturday.setDate(today.getDate() + daysUntilSaturday);
-  nextSaturday.setHours(0, 0, 0, 0); // Set to start of day
-  
-  return nextSaturday;
-}
-
-// Calculate time until next Saturday
-function getTimeUntilNextSaturday() {
-  const now = new Date();
-  const nextSaturday = getNextSaturday();
-  
-  // If it's already Saturday, set to next week
-  if (now.getDay() === 6 && now < nextSaturday) {
-    // It's Saturday but before the quiz time
-    return {
-      days: 0,
-      hours: nextSaturday.getHours() - now.getHours(),
-      minutes: nextSaturday.getMinutes() - now.getMinutes(),
-      seconds: nextSaturday.getSeconds() - now.getSeconds()
-    };
-  } else {
-    const diff = nextSaturday.getTime() - now.getTime();
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    return { days, hours, minutes, seconds };
-  }
-}
-
-// Get quiz settings based on day of week
-function getQuizSettings() {
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-  
-  if (dayOfWeek === 6) { // Saturday
-    return {
-      name: 'Main Quiz',
-      questions: 20,
-      totalTime: 180, // 3 minutes in seconds
-      badgeClass: '',
-      description: 'Main weekly quiz - 20 questions, 3 minutes'
-    };
-  } else { // Other days
-    return {
-      name: 'Mini Quiz',
-      questions: 5,
-      totalTime: 55, // 55 seconds  
-      badgeClass: 'mini',
-      description: 'Daily mini quiz - 5 questions, 55 seconds'
-    };
-  }
-}
-
-// Get random questions from pool
-function getRandomQuestions(count) {
-  const shuffled = [...state.quizQuestions].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
-
-// Update quiz status based on day of week
-function updateQuizStatus() {
-  const today = new Date();
-  const isSaturday = today.getDay() === 6;
-  const quizBadge = document.getElementById('quizBadge');
-  const quizStatusText = document.getElementById('quizStatusText');
-  const countdownContainer = document.getElementById('countdownContainer');
-  const openQuizBtn = document.getElementById('openQuiz');
-  const quizSettings = getQuizSettings();
-  
-  quizBadge.textContent = quizSettings.name.toUpperCase();
-  quizBadge.className = `quiz-badge ${quizSettings.badgeClass}`;
-  quizStatusText.textContent = quizSettings.description;
-  
-  if (isSaturday) {
-    countdownContainer.style.display = 'none';
-    openQuizBtn.disabled = false;
-  } else {
-    countdownContainer.style.display = 'block';
-    openQuizBtn.disabled = false; // Enable quiz for all days now
-    
-    // Update countdown
-    updateCountdown();
-    
-    // Set interval to update countdown every second
-    if (!window.countdownInterval) {
-      window.countdownInterval = setInterval(updateCountdown, 1000);
-    }
-  }
-}
-
-// Update countdown display
-function updateCountdown() {
-  const timeUntil = getTimeUntilNextSaturday();
-  
-  document.getElementById('countdownDays').textContent = String(timeUntil.days).padStart(2, '0');
-  document.getElementById('countdownHours').textContent = String(timeUntil.hours).padStart(2, '0');
-  document.getElementById('countdownMinutes').textContent = String(timeUntil.minutes).padStart(2, '0');
-  document.getElementById('countdownSeconds').textContent = String(timeUntil.seconds).padStart(2, '0');
-}
-
-// --- Enhanced App State ---
 let state = loadState();
 let currentUser = null;
 let cart = {};
-let quizState = { 
-  running: false, 
-  timeLeft: 0, 
-  timer: null, 
-  answers: [], 
-  startedAt: null, 
-  currentQuestions: [],
-  completionTime: null 
-};
 
-// --- DOM picks ---
-const productsEl = document.getElementById('products');
-const cartListEl = document.getElementById('cartList');
-const cartTotalEl = document.getElementById('cartTotal');
-const sellerPhoneDisplay = document.getElementById('sellerPhoneDisplay');
-const welcomeEl = document.getElementById('welcome');
-const acctNumberEl = document.getElementById('acctNumber');
-const sandwichesCountEl = document.getElementById('sandwichesCount');
-const smoothiesCountEl = document.getElementById('smoothiesCount');
-const balanceEl = document.getElementById('balance');
-const affiliateBalanceEl = document.getElementById('affiliateBalance');
-const progressFill = document.getElementById('progressFill');
-const progressText = document.getElementById('progressText');
-const proofListEl = document.getElementById('proofList');
-const referralCountEl = document.getElementById('referralCount');
-const confirmedReferralsEl = document.getElementById('confirmedReferrals');
+const $ = id => document.getElementById(id);
+const notify = (m) => { const n=$('notification'); const t=$('notificationText'); t.textContent=m; n.style.display='block'; setTimeout(()=>n.style.display='none',3000); };
+function uid(len=7){ return Math.random().toString(36).slice(2,2+len) }
+function formatN(n){ return '₦'+Number(n).toLocaleString() }
+function now(){ return new Date().toISOString() }
 
-// defensive find (some elements may not exist in edge cases)
-function $(id){ return document.getElementById(id) }
+// DOM refs
+const productsEl = $('products'); const cartListEl = $('cartList'); const cartTotalEl = $('cartTotal');
+const sellerPhoneDisplay = $('sellerPhoneDisplay'); const welcomeEl = $('welcome');
+const acctNumberEl = $('acctNumber'); const affiliateBalanceEl = $('affiliateBalance');
+const referralCountEl = $('referralCount'); const confirmedReferralsEl = $('confirmedReferrals');
+const referralsListEl = $('referralsList'); const payoutsListEl = $('payoutsList'); const proofListEl = $('proofList');
+const referralLinkEl = $('referralLink');
 
-// --- Notification System ---
-function showNotification(message, type = 'success', duration = 5000) {
-  const notification = $('#notification');
-  const notificationText = $('#notificationText');
-  
-  notificationText.textContent = message;
-  notification.className = `notification ${type} show`;
-  
-  setTimeout(() => {
-    notification.classList.remove('show');
-  }, duration);
-}
-
-// --- Enhanced Render Functions ---
-function renderProducts(){
-  productsEl.innerHTML = '';
-  state.products.forEach(p=>{
-    const div = document.createElement('div'); div.className='product';
+// renderers
+function renderProducts(query=''){
+  productsEl.innerHTML='';
+  const list = state.products.filter(p=>!query || (p.title+' '+p.desc).toLowerCase().includes(query.toLowerCase()));
+  list.forEach(p=>{
+    const div=document.createElement('div'); div.className='product';
     div.innerHTML = `
       <div class="img-wrap">
-        ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
-        <img src="${p.img}" alt="${p.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMWEyNjNmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
+        ${p.badge?`<span class="badge">${p.badge}</span>`:''}
+        <img src="${p.img||''}" alt="${p.title}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;800&quot; height=&quot;400&quot;><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;%23010a10&quot;/><text x=&quot;50%&quot; y=&quot;50%&quot; fill=&quot;%23ffffff&quot; font-family=&quot;Arial&quot; font-size=&quot;24&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot;>Image</text></svg>'">
       </div>
       <div class="body">
         <div>
@@ -873,7 +347,10 @@ function renderProducts(){
         </div>
         <div class="footer">
           <div class="price">${formatN(p.price)}</div>
-          <button class="btn" data-id="${p.id}" data-action="add"><i class="fas fa-plus"></i>&nbsp;Add</button>
+          <div>
+            <button class="nav-btn" data-id="${p.id}" data-action="view"><i class="fas fa-eye"></i></button>
+            <button class="btn" data-id="${p.id}" data-action="add"><i class="fas fa-plus"></i>&nbsp;Add</button>
+          </div>
         </div>
       </div>
     `;
@@ -882,20 +359,12 @@ function renderProducts(){
 }
 
 function renderCart(){
-  cartListEl.innerHTML = '';
+  cartListEl.innerHTML='';
   const ids = Object.keys(cart);
-  if(ids.length === 0){ 
-    cartListEl.innerHTML = '<div class="center small muted">Cart is empty</div>'; 
-    cartTotalEl.textContent = formatN(0); 
-    return; 
-  }
-  
+  if(!ids.length){ cartListEl.innerHTML = '<div class="center small muted">Cart is empty</div>'; cartTotalEl.textContent=formatN(0); return; }
   ids.forEach(id=>{
-    const qty = cart[id];
-    const p = state.products.find(x=>x.id===id);
-    if (!p) return; // Skip if product not found
-    
-    const div = document.createElement('div'); div.className='cart-item';
+    const qty = cart[id]; const p = state.products.find(x=>x.id===id); if(!p) return;
+    const div=document.createElement('div'); div.className='cart-item';
     div.innerHTML = `
       <div style="flex:1">
         <div style="font-weight:800">${p.title}</div>
@@ -915,932 +384,210 @@ function renderCart(){
   cartTotalEl.textContent = formatN(getCartTotal());
 }
 
-function getCartTotal(){ 
-  return Object.keys(cart).reduce((s,id)=>{ 
-    const p = state.products.find(x=>x.id===id); 
-    return s + (p ? p.price*cart[id] : 0) 
-  }, 0); 
-}
+function getCartTotal(){ return Object.keys(cart).reduce((s,id)=>{ const p=state.products.find(x=>x.id===id); return s + (p ? p.price*cart[id] : 0) },0) }
 
-function renderUser(){
+function renderProfile(){
   if(currentUser){
-    welcomeEl.textContent = `Hi, ${currentUser.acct}`;
-    acctNumberEl.textContent = currentUser.acct;
-    
-    const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
-    sandwichesCountEl.textContent = sandwiches;
-    smoothiesCountEl.textContent = smoothies;
-    
-    balanceEl.textContent = currentUser.balance || 0;
+    welcomeEl.textContent = `Hi, ${currentUser.acct}`; acctNumberEl.textContent = currentUser.acct;
+    const purchases = (currentUser.purchases||[]).length; $('weekPurchases').textContent = purchases;
     affiliateBalanceEl.textContent = currentUser.affiliateBalance || 0;
-    
-    // Update affiliate stats
-    updateAffiliateStats();
+    const myRefs = state.referrals.filter(r=>r.affiliate===currentUser.acct);
+    referralCountEl.textContent = myRefs.length;
+    confirmedReferralsEl.textContent = myRefs.filter(r=>r.status==='confirmed').length;
+    updateReferralLink();
   } else {
-    welcomeEl.textContent = 'Not logged in';
-    acctNumberEl.textContent = '—';
-    sandwichesCountEl.textContent = '0';
-    smoothiesCountEl.textContent = '0';
-    balanceEl.textContent = '0';
-    affiliateBalanceEl.textContent = '0';
-    referralCountEl.textContent = '0';
-    confirmedReferralsEl.textContent = '0';
-  }
-  updateProgressBar();
-}
-
-function updateAffiliateStats() {
-  if (!currentUser) return;
-  
-  const userReferrals = state.referrals.filter(r => r.affiliate === currentUser.acct);
-  const confirmedCount = userReferrals.filter(r => r.status === 'confirmed').length;
-  
-  referralCountEl.textContent = userReferrals.length;
-  confirmedReferralsEl.textContent = confirmedCount;
-}
-
-function purchasesThisWeek(acct){
-  const u = state.users[acct]; 
-  if(!u) return { sandwiches: 0, smoothies: 0 };
-  
-  const wk = getWeekKey(); 
-  const weekPurchases = (u.purchases||[]).filter(p=>p.week===wk);
-  
-  const sandwiches = weekPurchases.filter(p => p.type === 'sandwich').length;
-  const smoothies = weekPurchases.filter(p => p.type === 'smoothie').length;
-  
-  return { sandwiches, smoothies };
-}
-
-function updateProgressBar(){
-  if (!currentUser) {
-    progressFill.style.width = '0%';
-    progressText.textContent = '0/2 sandwiches or 0/1 smoothie';
-    return;
-  }
-  
-  const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
-  
-  // Check if eligible (2+ sandwiches OR 1+ smoothie)
-  const isEligible = sandwiches >= 2 || smoothies >= 1;
-  const percent = isEligible ? 100 : Math.min(100, Math.round((Math.max(sandwiches/2, smoothies/1)) * 100));
-  
-  progressFill.style.width = percent + '%';
-  progressText.textContent = `${sandwiches}/2 sandwiches or ${smoothies}/1 smoothie`;
-  
-  if(isEligible) {
-    progressFill.style.background = 'linear-gradient(90deg, #4caf50, #66bb6a)';
-  } else {
-    progressFill.style.background = '';
+    welcomeEl.textContent='Not logged in'; acctNumberEl.textContent='—'; $('weekPurchases').textContent=0;
+    affiliateBalanceEl.textContent='0'; referralCountEl.textContent='0'; confirmedReferralsEl.textContent='0';
+    referralLinkEl.value='';
   }
 }
 
-function renderProofList(){
-  proofListEl.innerHTML = '';
-  if(state.payouts.length===0){ proofListEl.innerHTML = '<div class="small muted center">No payouts yet</div>'; return; }
+function renderReferralsList(){
+  const list = currentUser ? state.referrals.filter(r=>r.affiliate===currentUser.acct) : [];
+  const container = referralsListEl; container.innerHTML='';
+  if(!list.length){ container.innerHTML='<div class="center small muted">No referrals yet</div>'; return; }
+  list.forEach(r=>{
+    const div=document.createElement('div'); div.className='referral-row';
+    div.innerHTML = `<div><strong>${r.referred}</strong><div class="small muted">${new Date(r.addedAt).toLocaleString()}</div></div><div class="${r.status==='pending'?'status-pending':r.status==='confirmed'?'status-confirmed':'status-paid'}">${r.status}</div>`;
+    container.appendChild(div);
+  });
+}
+
+function renderPayoutsList(){
+  const list = currentUser ? state.payouts.filter(p=>p.affiliate===currentUser.acct) : [];
+  const container = payoutsListEl; container.innerHTML='';
+  if(!list.length){ container.innerHTML='<div class="center small muted">No payout requests</div>'; return; }
+  list.forEach(p=>{
+    const div=document.createElement('div'); div.className='referral-row';
+    div.innerHTML = `<div><strong>${formatN(p.amount)}</strong><div class="small muted">${p.note || ''} • ${new Date(p.requestedAt).toLocaleString()}</div></div><div class="${p.status==='pending'?'status-pending':p.status==='processed'?'status-paid':'status-confirmed'}">${p.status}</div>`;
+    container.appendChild(div);
+  });
+}
+
+function renderProofs(){
+  proofListEl.innerHTML='';
+  if(!state.proofs.length){ proofListEl.innerHTML = '<div class="small muted center">No proofs yet</div>'; return; }
+  state.proofs.slice().reverse().forEach(p=>{
+    const div=document.createElement('div'); div.className='referral-row';
+    div.innerHTML = `<div style="flex:1"><div style="font-weight:800">${p.text}</div><div class="small muted">${new Date(p.date).toLocaleString()}</div></div><div class="small muted">${p.by||'—'}</div>`;
+    proofListEl.appendChild(div);
+  });
+}
+
+// utils & actions
+function updateReferralLink(){
+  if(!currentUser){ referralLinkEl.value=''; return; }
+  const origin = location.origin === 'null' ? 'https://coyum.example' : location.origin;
+  referralLinkEl.value = `${origin}${location.pathname}?ref=${encodeURIComponent(currentUser.acct)}`;
+}
+
+function addToCart(id){ cart[id] = (cart[id]||0) + 1; renderCart(); }
+function decCart(id){ if(!cart[id]) return; cart[id]--; if(cart[id]<=0) delete cart[id]; renderCart(); }
+function incCart(id){ cart[id] = (cart[id]||0) + 1; renderCart(); }
+
+function checkoutWhatsApp(){
+  if(Object.keys(cart).length===0){ notify('Cart is empty'); return; }
+  const total = getCartTotal();
+  const items = Object.keys(cart).map(id=>{ const p=state.products.find(x=>x.id===id); return `${p.title} x${cart[id]} (${formatN(p.price*cart[id])})`}).join('%0A');
+  const phone = state.config.sellerPhone || '+2348103606602';
+  const text = `Hello! I want to order:%0A${items}%0ATotal: ${formatN(total)}%0AAccount: ${currentUser?currentUser.acct:''}`;
+  const url = `https://wa.me/${phone.replace(/\D/g,'')}?text=${text}`;
+  window.open(url,'_blank');
+  // store purchases locally for demo and affiliate confirmation
+  if(currentUser){
+    const purchases = currentUser.purchases || [];
+    Object.keys(cart).forEach(id=>{
+      const p = state.products.find(x=>x.id===id);
+      for(let i=0;i<cart[id];i++){ purchases.push({ id: uid(8), productId: id, price: p.price, type: p.type, date: now() }); }
+    });
+    currentUser.purchases = purchases; state.users[currentUser.acct] = currentUser; saveState(state);
+    // confirm any pending referral where referred is this account
+    const ref = state.referrals.find(r=>r.referred===currentUser.acct && r.status==='pending');
+    if(ref){ ref.status='confirmed'; ref.confirmedAt = now(); const aff = state.users[ref.affiliate] || { acct: ref.affiliate, affiliateBalance:0 }; aff.affiliateBalance = (aff.affiliateBalance||0) + (state.config.affiliateBonus||0); state.users[ref.affiliate]=aff; saveState(state); notify(`Referral confirmed: ${ref.affiliate} credited ${formatN(state.config.affiliateBonus||0)}`); }
+    renderProfile();
+  }
+  cart = {}; renderCart(); notify('Order opened in WhatsApp (demo).');
+}
+
+// affiliates
+function submitReferral(referred){
+  if(!currentUser){ notify('Login to add referrals'); return; }
+  if(!/^\d{10,11}$/.test(referred)){ notify('Enter a valid 10-11 digit account'); return; }
+  if(state.referrals.find(r=>r.referred===referred && r.affiliate===currentUser.acct)){ notify('Referral already exists'); return; }
+  const rec = { id: uid(), affiliate: currentUser.acct, referred, status:'pending', addedAt: now() };
+  state.referrals.push(rec); saveState(state); notify('Referral added'); renderReferralsList(); renderProfile();
+}
+
+function requestPayout(){
+  if(!currentUser){ notify('Login required'); return; }
+  const bal = currentUser.affiliateBalance || 0;
+  if(bal < (state.config.minPayout || 1000)){ notify('Insufficient affiliate balance'); return; }
+  const rec = { id: uid(), affiliate: currentUser.acct, amount: bal, status:'pending', note:'Payout request', requestedAt: now() };
+  state.payouts.push(rec); currentUser.affiliateBalance = 0; state.users[currentUser.acct] = currentUser; saveState(state);
+  notify('Payout requested (demo)'); renderPayoutsList(); renderProfile();
+}
+
+// admin
+let adminUnlocked=false;
+function adminUnlock(pass){
+  if(pass === state.config.adminPass){ adminUnlocked=true; $('adminArea').style.display='block'; notify('Admin unlocked'); renderAdminPayouts(); } else notify('Invalid password');
+}
+function renderAdminPayouts(){
+  const container = $('payoutsAdmin'); container.innerHTML='';
+  if(!state.payouts.length){ container.innerHTML='<div class="small muted center">No payouts</div>'; return; }
   state.payouts.slice().reverse().forEach(p=>{
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.style.padding='10px';
-    d.innerHTML = `<div class="flex-between"><div style="font-weight:800">${p.account}</div><div style="font-weight:900">${formatN(p.amount)}</div></div><div class="small muted" style="margin-top:6px">${new Date(p.date).toLocaleString()}</div>${p.img?'<div style="margin-top:8px"><img src="'+p.img+'" style="max-width:100%;border-radius:8px"></div>':''}`;
-    proofListEl.appendChild(d);
+    const div=document.createElement('div'); div.className='referral-row';
+    div.innerHTML = `<div style="flex:1"><strong>${formatN(p.amount)}</strong><div class="small muted">${p.affiliate} • ${new Date(p.requestedAt).toLocaleString()}</div></div><div><button class="nav-btn" data-id="${p.id}" data-action="process">Process</button> <button class="nav-btn" data-id="${p.id}" data-action="cancel">Cancel</button></div>`;
+    container.appendChild(div);
   });
 }
+function processPayout(id){
+  const p = state.payouts.find(x=>x.id===id); if(!p) return;
+  p.status='processed'; p.processedAt = now(); saveState(state); renderAdminPayouts(); renderPayoutsList(); notify('Payout processed (demo)');
+}
+function cancelPayout(id){
+  const i = state.payouts.findIndex(x=>x.id===id); if(i<0) return;
+  const p = state.payouts[i];
+  const user = state.users[p.affiliate] || { acct: p.affiliate, affiliateBalance:0 };
+  user.affiliateBalance = (user.affiliateBalance||0) + p.amount; state.users[p.affiliate]=user;
+  state.payouts.splice(i,1); saveState(state); renderAdminPayouts(); renderPayoutsList(); renderProfile(); notify('Payout cancelled & refunded');
+}
 
-// --- Modal helpers ---
-function openModal(id){ const el=$(id); if(el) el.classList.add('active') }
-function closeModal(id){ const el=$(id); if(el) el.classList.remove('active') }
+// export/import
+function exportData(){ const data = JSON.stringify(state,null,2); const blob = new Blob([data],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='coyum-data.json'; a.click(); URL.revokeObjectURL(url); }
+function importDataFile(file){ const reader=new FileReader(); reader.onload=e=>{ try{ const parsed=JSON.parse(e.target.result); state = Object.assign({}, DEFAULT, parsed); saveState(state); notify('Data imported'); location.reload(); }catch(err){ notify('Invalid file'); } }; reader.readAsText(file); }
 
-// attach global click for modal close buttons and dynamic buttons
-document.addEventListener('click', (e)=>{
-  // modal close via data-modal attribute or top-level button
-  const dm = e.target.closest('[data-modal]');
-  if(dm){
-    const id = dm.getAttribute('data-modal');
-    if(id) closeModal(id);
-  }
+// proofs
+function saveProof(text){ if(!text||!text.trim()){ notify('Enter proof'); return; } state.proofs.push({ id: uid(), text: text.trim(), date: now(), by: currentUser?currentUser.acct:'guest' }); saveState(state); renderProofs(); notify('Proof saved'); }
 
-  // product add
-  const addBtn = e.target.closest('button[data-action="add"]');
-  if(addBtn){
-    const id = addBtn.getAttribute('data-id'); 
-    if(id){ 
-      cart[id] = (cart[id]||0)+1; 
-      renderCart(); 
-      updateProgressBar(); 
-    }
-  }
+// login
+function doLogin(acct){
+  if(!/^\d{10,11}$/.test(acct)){ notify('Account must be 10-11 digits'); return; }
+  let user = state.users[acct] || { acct, balance:0, affiliateBalance:0, purchases:[] };
+  state.users[acct] = user; saveState(state); currentUser = user; renderProfile(); renderReferralsList(); renderPayoutsList(); notify('Logged in');
+}
 
-  // cart decrement
-  const decBtn = e.target.closest('button[data-action="dec"]');
-  if(decBtn){
-    const id = decBtn.getAttribute('data-id'); 
-    if(id && cart[id]){ 
-      cart[id]--; 
-      if(cart[id]<=0) delete cart[id]; 
-      renderCart(); 
-      updateProgressBar(); 
-    }
-  }
-  
-  // cart increment
-  const incBtn = e.target.closest('button[data-action="inc"]');
-  if(incBtn){
-    const id = incBtn.getAttribute('data-id'); 
-    if(id){ 
-      cart[id] = (cart[id]||0)+1; 
-      renderCart(); 
-      updateProgressBar(); 
-    }
+function ensureDemo(){ if(!Object.keys(state.users).length){ state.users['08000000001'] = { acct:'08000000001', balance:0, affiliateBalance:1500, purchases:[] }; saveState(state); } }
+
+// events
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(btn){
+    const action = btn.dataset.action; const id = btn.dataset.id;
+    if(action==='add') addToCart(id);
+    if(action==='dec') decCart(id);
+    if(action==='inc') incCart(id);
+    if(action==='process') processPayout(id);
+    if(action==='cancel') cancelPayout(id);
+    if(btn.id==='checkoutBtn') checkoutWhatsApp();
+    if(btn.id==='loginBtn') openModal('modalLogin');
+    if(btn.id==='doLogin'){ const acct = $('inputAcct').value.trim(); doLogin(acct); closeModal('modalLogin'); }
+    if(btn.id==='openAffiliate') openModal('modalAffiliate');
+    if(btn.id==='openAdmin') openModal('modalAdmin');
+    if(btn.id==='adminLoginBtn'){ adminUnlock($('adminPass').value.trim()); }
+    if(btn.id==='submitReferral'){ submitReferral($('referralPhoneInput').value.trim()); $('referralPhoneInput').value=''; }
+    if(btn.id==='requestPayout'){ requestPayout(); }
+    if(btn.id==='exportData'){ exportData(); }
+    if(btn.id==='addProofBtn'){ openModal('modalProof'); }
+    if(btn.id==='saveProof'){ saveProof($('proofText').value); $('proofText').value=''; closeModal('modalProof'); }
+    if(btn.id==='copyReferral'){ referralLinkEl.select(); document.execCommand('copy'); notify('Copied'); }
+    if(btn.id==='clearSearch'){ $('searchInput').value=''; renderProducts(''); }
+    if(btn.id==='processAllPayouts'){ state.payouts.filter(p=>p.status==='pending').forEach(p=>{ p.status='processed'; p.processedAt = now(); }); saveState(state); renderAdminPayouts(); renderPayoutsList(); notify('All pending processed'); }
+    if(btn.dataset.modal){ closeModal(btn.dataset.modal); }
   }
 });
 
-// --- Enhanced Product interactions ---
-function handleLogin(){
-  const inputEl = document.getElementById('inputAcct');
-  const v = inputEl.value.trim();
-  
-  // Validate OPAY account - must be 10 or 11 digits only
-  if(!v){ 
-    showNotification('Enter OPAY account number', 'error');
-    return; 
-  }
-  
-  // Check if it's only digits and length is 10 or 11
-  if(!/^\d{10,11}$/.test(v)){ 
-    showNotification('OPAY account must be 10-11 digits only, no letters or special characters', 'error');
-    inputEl.focus();
-    return; 
-  }
-  
-  if(!state.users[v]) state.users[v] = {
-    acct:v,
-    purchases:[],
-    balance:0,
-    affiliateBalance: 0,
-    reviews:[]
-  };
-  currentUser = state.users[v];
-  saveState(state);
-  renderUser();
-  closeModal('modalLogin');
-  showNotification('Logged in successfully as ' + v);
-}
+// import file wiring
+$('importDataBtn')?.addEventListener('click', ()=>$('importFile').click());
+$('importFile')?.addEventListener('change', (e)=>{ const f=e.target.files[0]; if(f) importDataFile(f); });
 
-function checkout(){
-  if(!currentUser){ 
-    showNotification('Please login before checkout', 'error');
-    openModal('modalLogin'); 
-    return; 
-  }
-  if(Object.keys(cart).length===0){ 
-    showNotification('Cart is empty', 'error');
-    return; 
-  }
+// search
+$('searchInput')?.addEventListener('input', (e)=>renderProducts(e.target.value));
 
-  const wk = getWeekKey();
-  const items = [];
-  Object.keys(cart).forEach(id=>{
-    const product = state.products.find(p=>p.id===id);
-    if (!product) return; // Skip if product not found
-    
-    for(let i=0;i<cart[id];i++){
-      const rec = {
-        id:product.id,
-        title:product.title,
-        price:product.price,
-        type: product.type,
-        date:nowISO(),
-        week:wk,
-        tx:uid(8)
-      };
-      state.users[currentUser.acct].purchases.push(rec);
-      items.push(rec);
-    }
-  });
-  saveState(state);
+// modal helpers
+function openModal(id){ $(id).style.display='flex'; }
+function closeModal(id){ $(id).style.display='none'; }
 
-  const message = encodeURIComponent(`Order from CO-YUM\nAccount: ${currentUser.acct}\nItems:\n${items.map(it=>`- ${it.title} (₦${it.price})`).join('\n')}\nTotal: ₦${getCartTotal()}\nPlease send the account details.`);
-  const phone = state.config.sellerPhone.replace(/\D/g,'');
-  const wa = `https://wa.me/${phone}?text=${message}`;
-  window.open(wa,'_blank');
-  cart = {}; renderCart(); renderUser(); renderProofList();
-  showNotification('Order sent to WhatsApp. Keep proof to claim quiz eligibility.');
-}
-
-// --- Enhanced Quiz System with Exact Completion Time ---
-function openQuizModal(){
-  if(!currentUser){ 
-    showNotification('Please login to take quiz', 'error');
-    openModal('modalLogin'); 
-    return; 
-  }
-  
-  // Check eligibility only for Saturday main quiz
-  const today = new Date();
-  if (today.getDay() === 6 && !eligibleForQuiz(currentUser.acct)){ 
-    const { sandwiches, smoothies } = purchasesThisWeek(currentUser.acct);
-    showNotification(`You need at least 2 sandwiches (currently: ${sandwiches}) OR 1 smoothie (currently: ${smoothies}) this week to qualify for the Saturday main quiz.`, 'error'); 
-    return; 
-  }
-  
-  buildQuizUI(); 
-  openModal('modalQuiz');
-}
-
-function eligibleForQuiz(acct){ 
-  const { sandwiches, smoothies } = purchasesThisWeek(acct);
-  return sandwiches >= 2 || smoothies >= 1;
-}
-
-function buildQuizUI(){
-  const area = document.getElementById('quizArea'); 
-  area.innerHTML = '';
-  
-  const quizSettings = getQuizSettings();
-  quizState.currentQuestions = getRandomQuestions(quizSettings.questions);
-  quizState.answers = []; 
-  quizState.running=false; 
-  quizState.completionTime = null;
-  document.getElementById('quizTimer').textContent='00:00';
-  
-  // Update modal title with quiz type
-  document.querySelector('#modalQuiz .panel h3').textContent = `${quizSettings.name} - Nutrition Quiz`;
-  
-  quizState.currentQuestions.forEach((q,idx)=>{
-    const block = document.createElement('div'); 
-    block.className='quiz-question';
-    block.innerHTML = `<div style="font-weight:800">Q${idx+1}. ${q.q}</div><div style="margin-top:8px" data-q="${idx}"></div>`;
-    const opts = block.querySelector('[data-q]');
-    
-    // Randomize answer choices
-    const choicesWithIndex = q.choices.map((choice, index) => ({ choice, index }));
-    const shuffledChoices = choicesWithIndex.sort(() => 0.5 - Math.random());
-    
-    shuffledChoices.forEach(({choice, index})=>{
-      const opt = document.createElement('div'); 
-      opt.className='quiz-option'; 
-      opt.textContent = choice; 
-      opt.dataset.choice = index; 
-      opt.dataset.qidx = idx;
-      opt.addEventListener('click', function(){
-        if(!quizState.running) return;
-        const qid = this.dataset.qidx;
-        document.querySelectorAll(`.quiz-option[data-qidx="${qid}"]`).forEach(o=>o.classList.remove('selected'));
-        this.classList.add('selected'); 
-        quizState.answers[qid] = Number(this.dataset.choice);
-      });
-      opts.appendChild(opt);
-    });
-    area.appendChild(block);
-  });
-}
-
-function startQuiz(){
-  if(quizState.running) return;
-  
-  const quizSettings = getQuizSettings();
-  quizState.running = true; 
-  quizState.timeLeft = quizSettings.totalTime; 
-  quizState.startedAt = new Date().toISOString();
-  quizState.completionTime = null;
-  
-  tickTimer(); 
-  quizState.timer = setInterval(()=>{ 
-    quizState.timeLeft--; 
-    if(quizState.timeLeft<=0) finishQuiz(); 
-    else tickTimer(); 
-  }, 1000);
-  
-  const btn = document.getElementById('startQuiz'); 
-  if(btn){ 
-    btn.disabled=true; 
-    btn.textContent='Quiz Running...' 
-  }
-}
-
-function tickTimer(){ 
-  const tm = quizState.timeLeft; 
-  const m = Math.floor(tm/60); 
-  const s = tm%60; 
-  const el = document.getElementById('quizTimer'); 
-  if(el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; 
-  if(tm<30 && el) el.style.color = 'var(--warning)'; 
-}
-
-function finishQuiz(){
-  if(quizState.timer){ 
-    clearInterval(quizState.timer); 
-    quizState.timer=null 
-  }
-  
-  // Record exact completion time
-  quizState.completionTime = new Date().toISOString();
-  quizState.running=false;
-  
-  let score=0;
-  quizState.currentQuestions.forEach((q,idx)=>{
-    if(quizState.answers[idx] !== undefined && quizState.answers[idx] === q.answer) score++
-  });
-  
-  // Calculate time taken (in seconds)
-  const timeTaken = quizState.timeLeft <= 0 ? 
-    getQuizSettings().totalTime : // Time ran out
-    getQuizSettings().totalTime - quizState.timeLeft; // User finished early
-  
-  // Create enhanced quiz record with exact completion time
-  const rec = { 
-    week: getWeekKey(), 
-    account: currentUser.acct, 
-    score, 
-    total: quizState.currentQuestions.length,
-    timeTaken: timeTaken, // Time taken in seconds
-    completionTime: quizState.completionTime, // Exact timestamp
-    date: nowISO(),
-    quizType: getQuizSettings().name
-  };
-  
-  // Validate and save the record
-  if (validateQuizRecord(rec)) {
-    state.leaderboard.push(rec); 
-    saveState(state);
-    showNotification(`Quiz finished — Score: ${score}/${quizState.currentQuestions.length}\nTime: ${timeTaken} seconds`);
-  } else {
-    showNotification('Error: Quiz data could not be saved properly.', 'error');
-  }
-  
-  closeModal('modalQuiz');
-  
-  const btn=document.getElementById('startQuiz'); 
-  if(btn){ 
-    btn.disabled=false; 
-    btn.textContent='Start Quiz' 
-  }
-}
-
-// --- Affiliate System ---
-function openAffiliateModal() {
-  if (!currentUser) {
-    showNotification('Please login to access affiliate features', 'error');
-    openModal('modalLogin');
-    return;
-  }
-  
-  renderReferralsList();
-  openModal('modalAffiliate');
-}
-
-function addReferral() {
-  if (!currentUser) {
-    showNotification('Please login to add referrals', 'error');
-    openModal('modalLogin');
-    return;
-  }
-  
-  const referralPhoneInput = document.getElementById('referralPhoneInput');
-  const referralPhone = referralPhoneInput.value.trim();
-  
-  // Validate phone number
-  if (!referralPhone) {
-    showNotification('Please enter a referral phone number', 'error');
-    return;
-  }
-  
-  if (!/^\d{10,11}$/.test(referralPhone)) {
-    showNotification('Referral phone must be 10-11 digits only, no letters or special characters', 'error');
-    referralPhoneInput.focus();
-    return;
-  }
-  
-  // Check if referral is the user themselves
-  if (referralPhone === currentUser.acct) {
-    showNotification('You cannot refer yourself', 'error');
-    return;
-  }
-  
-  // Check if referral already exists
-  const existingReferral = state.referrals.find(r => 
-    r.affiliate === currentUser.acct && r.referredPhone === referralPhone
-  );
-  
-  if (existingReferral) {
-    showNotification('You have already referred this phone number', 'error');
-    return;
-  }
-  
-  // Create new referral
-  const referral = {
-    id: uid(),
-    affiliate: currentUser.acct,
-    referredPhone: referralPhone,
-    status: 'pending',
-    date: nowISO(),
-    confirmedDate: null,
-    paidDate: null
-  };
-  
-  state.referrals.push(referral);
-  saveState(state);
-  
-  showNotification('Referral added successfully! You will earn ₦500 when they make a purchase and review.');
-  referralPhoneInput.value = '';
-  renderReferralsList();
-  updateAffiliateStats();
-}
-
-function renderReferralsList() {
-  const referralsListEl = document.getElementById('referralsList');
-  
-  if (!currentUser) {
-    referralsListEl.innerHTML = '<div class="center small muted">Please login to view referrals</div>';
-    return;
-  }
-  
-  const userReferrals = state.referrals.filter(r => r.affiliate === currentUser.acct);
-  
-  if (userReferrals.length === 0) {
-    referralsListEl.innerHTML = '<div class="center small muted">No referrals yet</div>';
-    return;
-  }
-  
-  referralsListEl.innerHTML = '';
-  
-  userReferrals.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(ref => {
-    const div = document.createElement('div');
-    div.className = 'referral-item';
-    
-    let statusClass = 'status-pending';
-    let statusText = 'Pending';
-    
-    if (ref.status === 'confirmed') {
-      statusClass = 'status-confirmed';
-      statusText = 'Confirmed';
-    } else if (ref.status === 'paid') {
-      statusClass = 'status-paid';
-      statusText = 'Paid';
-    }
-    
-    div.innerHTML = `
-      <div>
-        <div style="font-weight:600">${ref.referredPhone}</div>
-        <div class="small muted">${new Date(ref.date).toLocaleDateString()}</div>
-      </div>
-      <div class="${statusClass}" style="font-weight:600">${statusText}</div>
-    `;
-    
-    referralsListEl.appendChild(div);
-  });
-}
-
-// Check for referral confirmations when a review is added
-function checkReferralConfirmations(reviewAccount) {
-  const pendingReferrals = state.referrals.filter(r => 
-    r.referredPhone === reviewAccount && r.status === 'pending'
-  );
-  
-  if (pendingReferrals.length > 0) {
-    pendingReferrals.forEach(ref => {
-      ref.status = 'confirmed';
-      ref.confirmedDate = nowISO();
-      
-      // Add affiliate bonus to the referrer
-      if (state.users[ref.affiliate]) {
-        state.users[ref.affiliate].affiliateBalance = 
-          (state.users[ref.affiliate].affiliateBalance || 0) + state.config.affiliateBonus;
-      }
-    });
-    
-    saveState(state);
-    
-    // Update UI if the referrer is currently logged in
-    if (currentUser && pendingReferrals.some(ref => ref.affiliate === currentUser.acct)) {
-      renderUser();
-    }
-    
-    showNotification(`${pendingReferrals.length} referral(s) confirmed! Affiliate bonuses added.`);
-  }
-}
-
-// --- Enhanced Leaderboard & Reviews with Persistent Storage ---
-function showLeaderboard(){
-  const area = document.getElementById('reviewsArea'); 
-  area.innerHTML = '';
-  
-  // Show all weeks in tabs
-  const weeks = [...new Set(state.leaderboard.map(r => r.week))].sort().reverse();
-  
-  let html = `<h3>Leaderboard History (Persistent Storage)</h3>`;
-  
-  if (weeks.length === 0) {
-    html += '<div class="card" style="margin-top:8px"><div class="center small muted">No quiz entries yet</div></div>';
-  } else {
-    html += '<div class="card" style="margin-top:8px">';
-    
-    // Create tabs for each week
-    html += '<div class="flex" style="overflow-x:auto;margin-bottom:10px">';
-    weeks.forEach(week => {
-      html += `<button class="nav-btn week-tab" data-week="${week}" style="white-space:nowrap">${week}</button>`;
-    });
-    html += '</div>';
-    
-    // Default to showing the most recent week
-    const currentWeek = weeks[0];
-    const rows = state.leaderboard.filter(r => r.week === currentWeek)
-      .sort((a, b) => {
-        // Sort by score (descending), then by time taken (ascending - faster is better)
-        if (b.score !== a.score) return b.score - a.score;
-        return a.timeTaken - b.timeTaken;
-      });
-    
-    html += `<h4>Week ${currentWeek}</h4>`;
-    html += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
-    
-    if (rows.length === 0) {
-      html += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
-    } else {
-      rows.forEach((r, i) => {
-        const completionTime = new Date(r.completionTime || r.date).toLocaleString();
-        html += `<tr>
-          <td>${i+1}</td>
-          <td>${r.account}</td>
-          <td>${r.score}/${r.total}</td>
-          <td>${r.timeTaken}</td>
-          <td class="small">${completionTime}</td>
-          <td>${r.quizType || 'Main'}</td>
-        </tr>`;
-      });
-    }
-    html += '</tbody></table>';
-    html += '</div>';
-  }
-  
-  html += `<div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
-  
-  area.innerHTML = html;
-  
-  // Add event listeners to week tabs
-  document.querySelectorAll('.week-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      const week = this.getAttribute('data-week');
-      const rows = state.leaderboard.filter(r => r.week === week)
-        .sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return a.timeTaken - b.timeTaken;
-        });
-      
-      let tableHtml = `<h4>Week ${week}</h4>`;
-      tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
-      
-      if (rows.length === 0) {
-        tableHtml += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
-      } else {
-        rows.forEach((r, i) => {
-          const completionTime = new Date(r.completionTime || r.date).toLocaleString();
-          tableHtml += `<tr>
-            <td>${i+1}</td>
-            <td>${r.account}</td>
-            <td>${r.score}/${r.total}</td>
-            <td>${r.timeTaken}</td>
-            <td class="small">${completionTime}</td>
-            <td>${r.quizType || 'Main'}</td>
-          </tr>`;
-        });
-      }
-      tableHtml += '</tbody></table>';
-      
-      this.closest('.card').innerHTML = 
-        '<div class="flex" style="overflow-x:auto;margin-bottom:10px">' +
-        weeks.map(w => `<button class="nav-btn week-tab ${w === week ? 'primary' : ''}" data-week="${w}" style="white-space:nowrap">${w}</button>`).join('') +
-        '</div>' + tableHtml;
-        
-      // Reattach event listeners
-      document.querySelectorAll('.week-tab').forEach(t => {
-        t.addEventListener('click', function() {
-          const week = this.getAttribute('data-week');
-          const rows = state.leaderboard.filter(r => r.week === week)
-            .sort((a, b) => {
-              if (b.score !== a.score) return b.score - a.score;
-              return a.timeTaken - b.timeTaken;
-            });
-          
-          let tableHtml = `<h4>Week ${week}</h4>`;
-          tableHtml += '<table><thead><tr><th>Rank</th><th>Account</th><th>Score</th><th>Time (s)</th><th>Completion Time</th><th>Type</th></tr></thead><tbody>';
-          
-          if (rows.length === 0) {
-            tableHtml += `<tr><td colspan="6" class="center small muted">No entries this week</td></tr>`;
-          } else {
-            rows.forEach((r, i) => {
-              const completionTime = new Date(r.completionTime || r.date).toLocaleString();
-              tableHtml += `<tr>
-                <td>${i+1}</td>
-                <td>${r.account}</td>
-                <td>${r.score}/${r.total}</td>
-                <td>${r.timeTaken}</td>
-                <td class="small">${completionTime}</td>
-                <td>${r.quizType || 'Main'}</td>
-              </tr>`;
-            });
-          }
-          tableHtml += '</tbody></table>';
-          
-          this.closest('.card').innerHTML = 
-            '<div class="flex" style="overflow-x:auto;margin-bottom:10px">' +
-            weeks.map(w => `<button class="nav-btn week-tab ${w === week ? 'primary' : ''}" data-week="${w}" style="white-space:nowrap">${w}</button>`).join('') +
-            '</div>' + tableHtml;
-            
-          // Reattach event listeners again
-          document.querySelectorAll('.week-tab').forEach(tab => {
-            tab.addEventListener('click', arguments.callee);
-          });
-        });
-      });
-    });
-  });
-  
-  openModal('modalReviews');
-}
-
-function showReviews(){
-  const area = document.getElementById('reviewsArea'); 
-  area.innerHTML = '<h3>Brand Reviews (Persistent Storage)</h3>';
-  
-  if(state.reviews.length===0) {
-    area.innerHTML += '<div class="center small muted">No reviews yet</div>';
-  } else {
-    state.reviews.slice().reverse().forEach(r=>{
-      const c = document.createElement('div'); 
-      c.className='card'; 
-      c.style.marginBottom='10px';
-      c.innerHTML = `
-        <div class="flex-between">
-          <strong>${r.account}</strong>
-          <div class="small muted">${new Date(r.date).toLocaleString()}</div>
-        </div>
-        <div style="margin-top:8px">${r.text}</div>
-        ${r.rating ? `<div style="margin-top:6px"><strong>Rating:</strong> ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>` : ''}
-        ${r.img?'<div style="margin-top:8px"><img src="'+r.img+'" style="max-width:100%;border-radius:8px"></div>':''}
-      `;
-      area.appendChild(c);
-    });
-  }
-  
-  area.innerHTML += `<div style="margin-top:12px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
-  openModal('modalReviews');
-}
-
-function addReview(){
-  if(!currentUser){ 
-    showNotification('Login first', 'error');
-    openModal('modalLogin'); 
-    return; 
-  }
-  
-  const text = prompt('Write your review (short):'); 
-  if(!text) return;
-  
-  const ratingInput = prompt('Optional: Enter rating (1-5 stars) or leave blank:');
-  let rating = null;
-  if (ratingInput && !isNaN(ratingInput) && ratingInput >= 1 && ratingInput <= 5) {
-    rating = parseInt(ratingInput);
-  }
-  
-  const img = prompt('Optional: paste image URL (or leave blank)') || null;
-  
-  // Create enhanced review record
-  const review = { 
-    account: currentUser.acct, 
-    text, 
-    rating,
-    img, 
-    date: nowISO() 
-  };
-  
-  // Validate and save the review
-  if (validateReviewRecord(review)) {
-    state.reviews.push(review); 
-    saveState(state); 
-    
-    // Check if this review confirms any referrals
-    checkReferralConfirmations(currentUser.acct);
-    
-    showNotification('Thanks for your review!'); 
-    renderProofList();
-  } else {
-    showNotification('Error: Review could not be saved properly.', 'error');
-  }
-}
-
-// --- Enhanced Admin functions ---
-function adminUnlock(){
-  const pass = (document.getElementById('adminPass')||{value:''}).value;
-  if(pass === state.config.adminPass){
-    document.getElementById('adminArea').style.display = 'block';
-    document.getElementById('sellerPhone').value = state.config.sellerPhone;
-    document.getElementById('prizeMin').value = state.config.prizeMin;
-    document.getElementById('prizeMax').value = state.config.prizeMax;
-    document.getElementById('newQuestions').value = JSON.stringify(state.quizQuestions, null, 2);
-    renderPayoutsAdmin(); 
-    renderAffiliateAdmin();
-    showNotification('Admin unlocked');
-  } else showNotification('Wrong password', 'error');
-}
-
-function adminSaveConfig(){
-  const phone = (document.getElementById('sellerPhone')||{value:''}).value.trim();
-  const pmin = Number((document.getElementById('prizeMin')||{value:''}).value) || state.config.prizeMin;
-  const pmax = Number((document.getElementById('prizeMax')||{value:''}).value) || state.config.prizeMax;
-  if(phone) state.config.sellerPhone = phone;
-  state.config.prizeMin = pmin; state.config.prizeMax = pmax;
-  saveState(state); updateSellerPhone(); showNotification('Config saved');
-}
-
-function adminSaveQuestions(){
-  try{
-    const txt = (document.getElementById('newQuestions')||{value:''}).value.trim();
-    if(!txt){ showNotification('Paste JSON first', 'error'); return; }
-    const arr = JSON.parse(txt);
-    if(!Array.isArray(arr)){ showNotification('Questions JSON must be an array', 'error'); return; }
-    state.quizQuestions = arr; saveState(state); showNotification('Questions saved');
-  } catch(e){ showNotification('Invalid JSON: ' + e.message, 'error') }
-}
-
-function adminReset(){
-  if(!confirm('Reset leaderboard & payouts?')) return;
-  state.leaderboard = []; state.payouts = []; saveState(state); renderPayoutsAdmin(); renderProofList(); showNotification('Reset done');
-}
-
-function exportData(){ 
-  console.log('COYUM EXPORT', state); 
-  const dataStr = JSON.stringify(state, null, 2);
-  const dataBlob = new Blob([dataStr], {type: 'application/json'});
-  const url = URL.createObjectURL(dataBlob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'coyum-data.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showNotification('Data exported as JSON file');
-}
-
-function renderPayoutsAdmin(){
-  const el = document.getElementById('payoutsAdmin'); el.innerHTML = '';
-  if(state.payouts.length===0) el.innerHTML = '<div class="small muted">No payouts recorded</div>';
-  else state.payouts.slice().reverse().forEach(p=>{
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.style.padding='8px';
-    d.innerHTML = `<div class="flex-between"><div><strong>${p.account}</strong><div class="small muted">${new Date(p.date).toLocaleString()}</div></div><div style="font-weight:900">${formatN(p.amount)}</div></div>`;
-    el.appendChild(d);
-  });
-}
-
-function renderAffiliateAdmin() {
-  const el = document.getElementById('affiliateAdmin'); 
-  el.innerHTML = '';
-  
-  if(state.referrals.length === 0) {
-    el.innerHTML = '<div class="small muted">No affiliate referrals</div>';
-    return;
-  }
-  
-  // Group by status
-  const pending = state.referrals.filter(r => r.status === 'pending');
-  const confirmed = state.referrals.filter(r => r.status === 'confirmed');
-  const paid = state.referrals.filter(r => r.status === 'paid');
-  
-  let html = `
-    <div class="flex-between small" style="margin-bottom:8px">
-      <span>Pending: ${pending.length}</span>
-      <span>Confirmed: ${confirmed.length}</span>
-      <span>Paid: ${paid.length}</span>
-    </div>
-  `;
-  
-  // Show confirmed referrals that need payment
-  if (confirmed.length > 0) {
-    html += '<div class="small" style="margin-top:8px;margin-bottom:4px"><strong>Confirmed Referrals (Need Payment):</strong></div>';
-    
-    confirmed.forEach(ref => {
-      html += `
-        <div class="card" style="margin-bottom:6px;padding:8px">
-          <div class="flex-between">
-            <div>
-              <div><strong>Referrer:</strong> ${ref.affiliate}</div>
-              <div><strong>Referred:</strong> ${ref.referredPhone}</div>
-              <div class="small muted">Confirmed: ${new Date(ref.confirmedDate).toLocaleDateString()}</div>
-            </div>
-            <div style="font-weight:900">₦${state.config.affiliateBonus}</div>
-          </div>
-        </div>
-      `;
-    });
-  }
-  
-  el.innerHTML = html;
-}
-
-function processAffiliatePayouts() {
-  const confirmedReferrals = state.referrals.filter(r => r.status === 'confirmed');
-  
-  if (confirmedReferrals.length === 0) {
-    showNotification('No confirmed referrals to pay out', 'warning');
-    return;
-  }
-  
-  if (!confirm(`Process payouts for ${confirmedReferrals.length} confirmed referrals? Total: ₦${confirmedReferrals.length * state.config.affiliateBonus}`)) {
-    return;
-  }
-  
-  confirmedReferrals.forEach(ref => {
-    ref.status = 'paid';
-    ref.paidDate = nowISO();
-    
-    // Create payout record
-    state.payouts.push({
-      account: ref.affiliate,
-      amount: state.config.affiliateBonus,
-      date: nowISO(),
-      type: 'affiliate',
-      note: `Affiliate bonus for referral ${ref.referredPhone}`
-    });
-  });
-  
-  saveState(state);
-  renderPayoutsAdmin();
-  renderAffiliateAdmin();
-  showNotification(`Processed ${confirmedReferrals.length} affiliate payouts`);
-}
-
-function awardTopThisWeek(){
-  const wk = getWeekKey(); 
-  const entries = state.leaderboard.filter(e=>e.week===wk).sort((a,b)=> {
-    if (b.score !== a.score) return b.score - a.score;
-    return a.timeTaken - b.timeTaken;
-  });
-  if(entries.length===0){ showNotification('No entries this week', 'warning'); return; }
-  const top = entries[0];
-  const amount = Math.floor(Math.random() * (state.config.prizeMax - state.config.prizeMin + 1)) + state.config.prizeMin;
-  state.payouts.push({ account: top.account, amount, date: nowISO(), img:null, note:'Auto-awarded' });
-  if(!state.users[top.account]) state.users[top.account] = { acct:top.account, purchases:[], balance:0, reviews:[] };
-  state.users[top.account].balance = (state.users[top.account].balance||0) + amount;
-  saveState(state); renderPayoutsAdmin(); renderProofList(); renderUser(); showNotification(`Awarded ${formatN(amount)} to ${top.account}`);
-}
-
-// --- Utility UI wiring & init ---
-function updateSellerPhone(){ sellerPhoneDisplay.textContent = state.config.sellerPhone || '+234...'; }
-
-// Initialize event listeners
-document.getElementById('loginBtn').addEventListener('click', ()=>openModal('modalLogin'));
-document.getElementById('doLogin').addEventListener('click', handleLogin);
-document.getElementById('checkoutBtn').addEventListener('click', checkout);
-document.getElementById('openQuiz').addEventListener('click', openQuizModal);
-document.getElementById('startQuiz').addEventListener('click', startQuiz);
-document.getElementById('viewLeaderboard').addEventListener('click', showLeaderboard);
-document.getElementById('openAdmin').addEventListener('click', ()=>openModal('modalAdmin'));
-document.getElementById('adminLoginBtn').addEventListener('click', adminUnlock);
-document.getElementById('saveQuizQ').addEventListener('click', adminSaveQuestions);
-document.getElementById('exportData').addEventListener('click', exportData);
-document.getElementById('adminResetBtn').addEventListener('click', adminReset);
-document.getElementById('awardTop').addEventListener('click', awardTopThisWeek);
-document.getElementById('processAffiliatePayouts').addEventListener('click', processAffiliatePayouts);
-document.getElementById('viewHistory').addEventListener('click', ()=>{
-  if(!currentUser){ showNotification('Login first', 'error'); openModal('modalLogin'); return; }
-  const items = (currentUser.purchases||[]).slice().reverse();
-  let html = `<h3>Purchase History</h3><div class="card" style="margin-top:8px">`;
-  if(items.length===0) html += '<div class="small muted center">No purchases</div>';
-  else { html += '<ul style="list-style:none;padding:0">'; items.forEach(p=> html += `<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)"><div class="flex-between"><div>${p.title}</div><div>${formatN(p.price)}</div></div><div class="small muted">${new Date(p.date).toLocaleString()}</div></li>`); html += '</ul>';}
-  html += `</div><div style="margin-top:10px"><button class="nav-btn" data-modal="modalReviews">Close</button></div>`;
-  document.getElementById('reviewsArea').innerHTML = html; openModal('modalReviews');
-});
-document.getElementById('addReviewBtn').addEventListener('click', addReview);
-document.getElementById('viewReviews').addEventListener('click', showReviews);
-document.getElementById('openAffiliate').addEventListener('click', openAffiliateModal);
-document.getElementById('addReferralBtn').addEventListener('click', openAffiliateModal);
-document.getElementById('submitReferral').addEventListener('click', addReferral);
-document.getElementById('sellerPhone').addEventListener('change', adminSaveConfig);
-document.getElementById('prizeMin').addEventListener('change', adminSaveConfig);
-document.getElementById('prizeMax').addEventListener('change', adminSaveConfig);
-
-// modal close buttons (by attribute)
-document.querySelectorAll('[data-modal]').forEach(btn=>{
-  btn.addEventListener('click', (e)=>{
-    const id = btn.getAttribute('data-modal'); if(id) closeModal(id);
-  });
-});
-
-// modal outer click to close
-document.querySelectorAll('.modal').forEach(m=>{
-  m.addEventListener('click', (e)=>{ if(e.target === m) m.classList.remove('active') });
-});
-
-// initialize UI
-renderProducts();
+// init
+ensureDemo();
+renderProducts('');
 renderCart();
-renderUser();
-updateSellerPhone();
-renderProofList();
-renderPayoutsAdmin();
-renderAffiliateAdmin();
-updateQuizStatus();
+renderProfile();
+renderReferralsList();
+renderPayoutsList();
+renderProofs();
+sellerPhoneDisplay.textContent = state.config.sellerPhone || '+2348103606602';
+updateReferralLink();
 
+// handle ?ref= in URL (lightweight demo)
+(function handleRef(){
+  const params = new URLSearchParams(location.search); const ref = params.get('ref');
+  if(ref && /^\d{10,11}$/.test(ref)){
+    if(!state.referrals.find(r=>r.referred===ref && r.affiliate==='__link__')){
+      state.referrals.push({ id: uid(), affiliate:'__link__', referred:ref, status:'pending', addedAt: now() }); saveState(state);
+    }
+  }
+})();
 </script>
 </body>
 </html>
